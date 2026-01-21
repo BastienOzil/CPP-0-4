@@ -1,12 +1,12 @@
 .SILENT:
 
-NAME = megaphone
+NAME = zombie
 
 C++ = c++
 
 FLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRCS = Harl.cpp main.cpp
+SRCS = Zombie.cpp newZombie.cpp randomChump.cpp main.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 

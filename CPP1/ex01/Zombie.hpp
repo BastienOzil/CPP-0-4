@@ -6,7 +6,7 @@
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 09:05:50 by bozil             #+#    #+#             */
-/*   Updated: 2026/01/21 11:52:48 by bozil            ###   ########.fr       */
+/*   Updated: 2026/01/21 12:02:15 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class Zombie
 };
 
 Zombie* newZombie(std::string name);
+Zombie* zombieHorde( int N, std::string name);
 void randomChump(std::string name);
 
 #endif
