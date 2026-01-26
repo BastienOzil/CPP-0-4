@@ -1,12 +1,12 @@
 .SILENT:
 
-NAME = megaphone
+NAME = replace
 
 C++ = c++
 
 FLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRCS =
+SRCS = main.cpp replace.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 

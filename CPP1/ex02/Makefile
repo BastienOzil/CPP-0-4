@@ -1,12 +1,12 @@
 .SILENT:
 
-NAME = megaphone
+NAME = Hi_this_is_brain
 
 C++ = c++
 
 FLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRCS =
+SRCS = main.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
