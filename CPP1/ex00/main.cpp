@@ -6,7 +6,7 @@
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 09:05:47 by bozil             #+#    #+#             */
-/*   Updated: 2026/01/21 11:43:40 by bozil            ###   ########.fr       */
+/*   Updated: 2026/01/29 12:05:56 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 int	main(void)
 {
-	Zombie *heapZombie = newZombie("HeapZombie");
+	Zombie *heapZombie = newZombie("Zombie A");
 	heapZombie->announce();
 
-	randomChump("StackZombie");
+	randomChump("Zombie B");
 
 	delete heapZombie;
 

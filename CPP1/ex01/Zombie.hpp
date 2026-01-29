@@ -6,7 +6,7 @@
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 09:05:50 by bozil             #+#    #+#             */
-/*   Updated: 2026/01/21 12:02:15 by bozil            ###   ########.fr       */
+/*   Updated: 2026/01/29 11:55:20 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,11 @@ class Zombie
         std::string name;
     
     public:
+        Zombie(void);
         Zombie(std::string zombieName);
         ~Zombie(void);
         void announce(void);
+        void setName(std::string zombieName);
 };
 
 Zombie* newZombie(std::string name);

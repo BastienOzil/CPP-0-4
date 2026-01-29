@@ -6,7 +6,7 @@
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 13:31:05 by bozil             #+#    #+#             */
-/*   Updated: 2026/01/26 13:56:58 by bozil            ###   ########.fr       */
+/*   Updated: 2026/01/29 12:13:32 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,5 +23,5 @@ HumanA::~HumanA(void)
 
 void HumanA::attack(void) const
 {
-    std::cout << this->name << " attack with his " << this->weapon.getType() << std::endl;
+    std::cout << this->name << " use " << this->weapon.getType() << std::endl;
 }

@@ -6,7 +6,7 @@
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:53:32 by bozil             #+#    #+#             */
-/*   Updated: 2026/01/21 12:06:33 by bozil            ###   ########.fr       */
+/*   Updated: 2026/01/29 12:05:01 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,12 @@
 
 Zombie* zombieHorde(int N, std::string name)
 {
-    std:: string(first_zombie);
-    return first_zombie;
+    Zombie* horde = new Zombie[N];
+    
+    for (int i = 0; i < N; i++)
+    {
+        horde[i].setName(name);
+    }
+    
+    return horde;
 }
