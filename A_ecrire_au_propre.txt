@@ -1,0 +1,435 @@
+Notes sur le C++
+
+CPP0 ex00 - Les bases du C++ (megaphone)
+----------------------------------------
+NOUVELLES NOTIONS:
+- std::cout et std::endl (streams de sortie)
+- std::string (classe de chaînes)
+- Namespace std::
+- toupper() pour la manipulation de caractères
+
+EXPLICATION:
+- std::cout : stream de sortie standard (remplace printf en C)
+  Usage: std::cout << "texte" << variable << std::endl;
+  
+- std::string : classe pour gérer les chaînes de caractères
+  Plus sûr que char* en C, gère automatiquement la mémoire
+  Usage: std::string str = "hello";
+        str[i] pour accéder aux caractères
+        
+- Namespace std:: : évite les conflits de noms
+  Tous les éléments de la bibliothèque standard sont dans std::
+
+CPP0 EX01 - Première classe (PhoneBook)
+----------------------------------------
+NOUVELLES NOTIONS:
+- Déclaration de classes (class)
+- Attributs privés (private:)
+- Méthodes publiques (public:)
+- Constructeur et destructeur
+- Méthodes const
+- std::getline() pour la saisie
+
+EXPLICATION:
+- Class : structure qui encapsule données et fonctions
+  Syntaxe: class NomClasse { private: ... public: ... };
+  
+- private: : membres accessibles uniquement dans la classe
+  Protège les données de modifications externes
+  
+- public: : membres accessibles depuis l'extérieur
+  Interface publique de la classe
+  
+- Constructeur : fonction spéciale appelée à la création
+  Syntaxe: NomClasse(void) { /* initialisation */ }
+  
+- Destructeur : fonction spéciale appelée à la destruction
+  Syntaxe: ~NomClasse(void) { /* nettoyage */ }
+  
+- Méthode const : garantit qu'elle ne modifie pas l'objet
+  Syntaxe: int getValue(void) const { return value; }
+
+CPP0 EX02 - Membres statiques (Account)
+----------------------------------------
+NOUVELLES NOTIONS:
+- Membres statiques (static)
+- Fonctions membres statiques
+- Initialisation de variables statiques hors de la classe
+
+EXPLICATION:
+- Membre static : partagé par toutes les instances de la classe
+  Existe même sans instance de la classe
+  Syntaxe dans .hpp: static int _nbAccounts;
+  
+- Initialisation static : doit être faite hors de la classe
+  Dans .cpp: int Account::_nbAccounts = 0;
+  
+- Fonction static : peut être appelée sans instance
+  Accès uniquement aux membres statiques
+  Syntaxe: static int getNbAccounts(void);
+  Appel: Account::getNbAccounts();
+
+
+CPP1 EX00 - Allocation dynamique (new/delete)
+----------------------------------------------
+NOUVELLES NOTIONS:
+- new : allocation dynamique sur le tas (heap)
+- delete : libération de mémoire dynamique
+- Distinction stack vs heap
+
+EXPLICATION:
+- new : alloue un objet sur le heap, retourne un pointeur
+  Syntaxe: Zombie* z = new Zombie("name");
+  L'objet persiste après la sortie de la fonction
+  
+- delete : libère la mémoire allouée par new
+  Syntaxe: delete z;
+  Appelle le destructeur puis libère la mémoire
+  
+- Stack vs Heap:
+  Stack : variables locales, durée de vie = scope de la fonction
+  Heap : allocation dynamique, dure jusqu'au delete
+  
+  Utiliser stack quand: durée de vie courte, taille connue
+  Utiliser heap quand: durée de vie longue, taille dynamique
+
+CPP1 EX01 - Allocation de tableaux (new[]/delete[])
+----------------------------------------------------
+NOUVELLES NOTIONS:
+- new[] : allocation de tableaux dynamiques
+- delete[] : libération de tableaux dynamiques
+
+EXPLICATION:
+- new[] : alloue un tableau d'objets
+  Syntaxe: Zombie* horde = new Zombie[N];
+  Appelle le constructeur pour chaque élément
+  
+- delete[] : libère un tableau alloué par new[]
+  Syntaxe: delete[] horde;
+  Appelle le destructeur pour chaque élément
+  
+  IMPORTANT: toujours utiliser delete[] pour new[]
+             et delete pour new (sans [])
+
+CPP1 EX02 - Références (&)
+---------------------------
+NOUVELLES NOTIONS:
+- Références (&)
+- Différence pointeur vs référence
+
+EXPLICATION:
+- Référence : alias d'une variable existante
+  Syntaxe: std::string& ref = variable;
+  
+- Propriétés des références:
+  1. Doit être initialisée à la création
+  2. Ne peut pas être réassignée (toujours le même objet)
+  3. Pas de "référence nulle" (contrairement aux pointeurs)
+  4. Syntaxe plus simple que les pointeurs (pas de *)
+  
+- Pointeur vs Référence:
+  Pointeur*: peut être NULL, peut changer de cible, besoin de *
+  Référence&: jamais NULL, toujours la même cible, transparent
+  
+  Usage: std::string* ptr = &str;    // pointeur
+         std::string& ref = str;      // référence
+         
+  Accès: *ptr pour déréférencer
+         ref utilisé directement
+
+CPP1 EX03 - Références dans les classes
+----------------------------------------
+NOUVELLES NOTIONS:
+- Références comme membres de classe
+- Initialisation dans la liste d'initialisation
+- Différence référence/pointeur pour les attributs
+
+EXPLICATION:
+- Référence membre : attribut qui référence un objet externe
+  Syntaxe: class HumanA {
+               Weapon& weapon;  // référence membre
+           };
+  
+- Liste d'initialisation : OBLIGATOIRE pour les références
+  Syntaxe: HumanA(std::string name, Weapon& weapon) 
+           : name(name), weapon(weapon) { }
+  
+  Les références doivent être initialisées à la construction
+  Ne peuvent pas être initialisées dans le corps du constructeur
+  
+- Choix référence vs pointeur:
+  Référence (&) quand: l'objet doit toujours exister
+                       relation permanente (HumanA a toujours une arme)
+  
+  Pointeur (*) quand: l'objet peut être NULL
+                      relation optionnelle (HumanB peut ne pas avoir d'arme)
+                      besoin de changer la cible
+
+CPP1 EX04 - Manipulation de fichiers (fstream)
+-----------------------------------------------
+NOUVELLES NOTIONS:
+- std::ifstream : lecture de fichiers
+- std::ofstream : écriture de fichiers
+- Méthode .find() et .replace() sur std::string
+
+EXPLICATION:
+- ifstream : input file stream (lecture)
+  Syntaxe: std::ifstream infile("filename.txt");
+           std::string line;
+           std::getline(infile, line);
+           infile.close();
+  
+- ofstream : output file stream (écriture)
+  Syntaxe: std::ofstream outfile("output.txt");
+           outfile << "texte" << std::endl;
+           outfile.close();
+  
+- Manipulation de strings:
+  str.find(s1) : trouve la position de s1 dans str
+  str.substr(pos, len) : extrait une sous-chaîne
+  str.length() : retourne la longueur
+
+CPP1 EX05/EX06 - Pointeurs sur fonctions membres
+-------------------------------------------------
+NOUVELLES NOTIONS:
+- Pointeurs sur méthodes de classe
+- Syntaxe (Class::*ptr)(args)
+- Switch/case vs tableau de pointeurs
+
+EXPLICATION:
+- Pointeur sur méthode : référence une fonction membre de classe
+  Syntaxe: void (Harl::*fptr)(void) = &Harl::debug;
+  
+  Déclaration: void (ClassName::*name)(params);
+  Assignation: name = &ClassName::methodName;
+  Appel: (object.*name)(args);
+  
+- Tableau de pointeurs sur méthodes:
+  void (Harl::*functions[4])(void) = {
+      &Harl::debug,
+      &Harl::info,
+      &Harl::warning,
+      &Harl::error
+  };
+  
+  Permet d'appeler dynamiquement une méthode:
+  (this->*functions[i])();
+  
+  Remplace les longues chaînes de if/else if
+
+
+CPP2 EX00 - Forme canonique orthodoxe (Orthodox Canonical Form)
+---------------------------------------------------------------
+NOUVELLES NOTIONS:
+- Constructeur par copie (Copy Constructor)
+- Opérateur d'assignation (Copy Assignment Operator)
+- La forme canonique orthodoxe (4 éléments obligatoires)
+
+EXPLICATION:
+- Forme canonique orthodoxe : 4 éléments essentiels d'une classe C++
+  
+  1. Constructeur par défaut
+     Syntaxe: ClassName(void);
+     
+  2. Constructeur par copie
+     Syntaxe: ClassName(const ClassName& other);
+     Appelé lors de: ClassName a = b; ou passage par valeur
+     
+  3. Opérateur d'assignation
+     Syntaxe: ClassName& operator=(const ClassName& other);
+     Appelé lors de: a = b; (quand a existe déjà)
+     
+  4. Destructeur
+     Syntaxe: ~ClassName(void);
+
+- Constructeur par copie:
+  Fixed(const Fixed& other) : _value(other.getRawBits()) {
+      std::cout << "Copy constructor called" << std::endl;
+  }
+  
+  Copie les données d'un objet existant
+  Paramètre const& pour éviter une copie infinie
+  
+- Opérateur d'assignation:
+  Fixed& operator=(const Fixed& other) {
+      if (this != &other) {  // protection auto-assignation
+          this->_value = other.getRawBits();
+      }
+      return *this;
+  }
+  
+  IMPORTANT: 
+  - Vérifier this != &other (auto-assignation)
+  - Retourner *this pour permettre a = b = c;
+
+CPP2 EX01 - Constructeurs paramétrés et conversions
+----------------------------------------------------
+NOUVELLES NOTIONS:
+- Constructeurs avec paramètres (int, float)
+- Fonctions de conversion (toInt(), toFloat())
+- Surcharge de l'opérateur << pour std::ostream
+- Nombres à virgule fixe (Fixed Point)
+
+EXPLICATION:
+- Constructeurs paramétrés : créent un objet à partir d'une valeur
+  Fixed(const int value) : _value(value << _fractionalBits) {}
+  Fixed(const float value) : _value(roundf(value * (1 << _fractionalBits))) {}
+  
+  Permettent: Fixed a(42); ou Fixed b(42.42f);
+  
+- Fonctions de conversion:
+  int toInt(void) const {
+      return _value >> _fractionalBits;
+  }
+  float toFloat(void) const {
+      return (float)_value / (1 << _fractionalBits);
+  }
+  
+- Surcharge de l'opérateur << (opérateur externe):
+  std::ostream& operator<<(std::ostream& out, const Fixed& fixed) {
+      out << fixed.toFloat();
+      return out;
+  }
+  
+  Permet: std::cout << fixedNumber;
+  IMPORTANT: retourner out& pour permettre le chaînage
+  
+- Fixed Point: représentation de nombres à virgule avec des entiers
+  Stocke: valeur * 2^fractionalBits
+  Exemple: 42.42 avec 8 bits fractionnaires = 42.42 * 256 = 10859
+
+CPP2 EX02 - Surcharge complète d'opérateurs
+--------------------------------------------
+NOUVELLES NOTIONS:
+- Opérateurs de comparaison (>, <, >=, <=, ==, !=)
+- Opérateurs arithmétiques (+, -, *, /)
+- Opérateurs d'incrémentation (++, --)
+- Fonctions membres statiques (min, max)
+- Différence pré-incrémentation vs post-incrémentation
+
+EXPLICATION:
+- Opérateurs de comparaison:
+  bool operator>(const Fixed& other) const {
+      return this->_value > other._value;
+  }
+  
+  Permettent: if (a > b), if (a == b), etc.
+  Doivent être const (ne modifient pas l'objet)
+  
+- Opérateurs arithmétiques:
+  Fixed operator+(const Fixed& other) const {
+      Fixed result;
+      result.setRawBits(this->_value + other._value);
+      return result;
+  }
+  
+  Permettent: Fixed c = a + b;
+  Retournent un nouvel objet
+  
+- Pré-incrémentation (++a):
+  Fixed& operator++() {
+      _value++;
+      return *this;
+  }
+  
+  Modifie puis retourne
+  Retourne une référence (plus efficace)
+  
+- Post-incrémentation (a++):
+  Fixed operator++(int) {
+      Fixed tmp(*this);
+      _value++;
+      return tmp;
+  }
+  
+  Retourne puis modifie
+  Paramètre int (dummy) pour différencier
+  Retourne une copie (moins efficace)
+  
+- Fonctions statiques de comparaison:
+  static Fixed& min(Fixed& a, Fixed& b) {
+      return (a < b) ? a : b;
+  }
+  static const Fixed& min(const Fixed& a, const Fixed& b) {
+      return (a < b) ? a : b;
+  }
+  
+  Deux versions: const et non-const
+  Permettent: Fixed::min(a, b);
+
+CPP2 EX03 - Attributs const
+----------------------------
+NOUVELLES NOTIONS:
+- Attributs const dans une classe
+- Initialisation obligatoire dans la liste d'initialisation
+- Différence avec les références
+
+EXPLICATION:
+- Attribut const : valeur constante après initialisation
+  class Point {
+      Fixed const _x;
+      Fixed const _y;
+  };
+  
+- Initialisation OBLIGATOIRE dans la liste:
+  Point(float x, float y) : _x(x), _y(y) {}
+  
+  Ne peut PAS être fait dans le corps du constructeur
+  Une fois initialisé, ne peut plus changer
+  
+- Opérateur d'assignation avec const:
+  Point& operator=(const Point& other) {
+      // Impossible de réassigner _x et _y car const
+      // Généralement retourne juste *this sans rien faire
+      return *this;
+  }
+  
+  Les attributs const ne peuvent pas être réassignés
+  L'opérateur = ne peut donc pas copier ces valeurs
+
+
+RÉSUMÉ:
+CPP0: Classes, encapsulation, membres statiques
+- Namespace, iostream
+- Classes (private/public)
+- Constructeur/destructeur
+- Méthodes const
+- Membres et méthodes statiques
+
+CPP1: Gestion mémoire, références, pointeurs
+- new/delete, new[]/delete[]
+- Stack vs Heap
+- Références (&)
+- Références vs pointeurs
+- Références comme membres
+- Pointeurs sur fonctions membres
+- Fichiers (ifstream/ofstream)
+
+CPP2: Surcharge d'opérateurs, forme canonique
+- Forme canonique orthodoxe (4 éléments)
+- Constructeur par copie
+- Opérateur d'assignation
+- Constructeurs paramétrés
+- Surcharge d'opérateurs (<, +, ++, <<, etc.)
+- Pré/post incrémentation
+- Fonctions statiques avancées
+- Attributs const
+
+CONSEILS GÉNÉRAUX
+
+1. Toujours utiliser la forme canonique orthodoxe pour vos classes
+   (constructeur par défaut, par copie, opérateur =, destructeur)
+
+2. delete ce qui a été alloué par new, delete[] pour new[]
+
+3. Références (&) pour les paramètres de fonctions (évite les copies)
+
+4. const partout où c'est possible (méthodes, paramètres, retours)
+
+5. Liste d'initialisation pour: références, const, et optimisation
+
+6. Préférer pré-incrémentation (++i) à post-incrémentation (i++)
+
+7. Toujours vérifier this != &other dans l'opérateur d'assignation
+
+8. Retourner *this dans l'opérateur = pour permettre le chaînage
