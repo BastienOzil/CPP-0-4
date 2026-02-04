@@ -6,11 +6,11 @@ NOUVELLES NOTIONS:
 - std::cout et std::endl (streams de sortie)
 - std::string (classe de chaînes)
 - Namespace std::
-- toupper() pour la manipulation de caractères
+- toupper() pour la manipulation de caractères vers les majuscule (tolower pour minuscule)
 
 EXPLICATION:
 - std::cout : stream de sortie standard (remplace printf en C)
-  Usage: std::cout << "texte" << variable << std::endl;
+  Usage: std::cout << "texte" << variable << std::endl;(endl remplace /n en C)
   
 - std::string : classe pour gérer les chaînes de caractères
   Plus sûr que char* en C, gère automatiquement la mémoire
