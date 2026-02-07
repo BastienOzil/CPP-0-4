@@ -6,7 +6,7 @@
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 11:32:07 by bozil             #+#    #+#             */
-/*   Updated: 2026/02/04 12:16:15 by bozil            ###   ########.fr       */
+/*   Updated: 2026/02/04 11:50:51 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,5 +99,5 @@ void ClapTrap::beRepaired(unsigned int amount)
     EP--;
     HP += amount;
     std::cout << "ClapTrap " << name << " repairs itself for " << amount
-              << " HP! HP: " << HP << ", EP: " << EP << std::endl;
+              << " hit points! HP: " << HP << ", EP: " << EP << std::endl;
 }

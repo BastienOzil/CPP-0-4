@@ -6,7 +6,7 @@
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 11:32:04 by bozil             #+#    #+#             */
-/*   Updated: 2026/02/04 12:32:21 by bozil            ###   ########.fr       */
+/*   Updated: 2026/02/04 12:26:24 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,13 @@
 
 class ClapTrap
 {
-private:
+  protected:
 	std::string name;
 	unsigned int HP;
 	unsigned int EP;
 	unsigned int DMG;
 
-public:
+  public:
 	ClapTrap();
 	ClapTrap(const std::string &name);
 	ClapTrap(const ClapTrap &other);

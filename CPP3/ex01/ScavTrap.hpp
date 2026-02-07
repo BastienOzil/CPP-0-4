@@ -1,26 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   ScavTrap.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/02 11:29:39 by bozil             #+#    #+#             */
-/*   Updated: 2026/02/04 12:09:58 by bozil            ###   ########.fr       */
+/*   Created: 2026/02/04 11:52:00 by bozil             #+#    #+#             */
+/*   Updated: 2026/02/04 12:18:14 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ClapTrap.hpp"
+#ifndef SCAVTRAP_HPP
+# define SCAVTRAP_HPP
 
-int main()
+# include "ClapTrap.hpp"
+
+class ScavTrap : public ClapTrap
 {
-	ClapTrap clap("CL4P-TP");
-	
-	clap.attack("Enemy");
-	clap.takeDamage(5);
-	clap.beRepaired(3);
-	clap.takeDamage(15);
-	clap.attack("Target");
-	
-	return (0);
-}
+  public:
+	ScavTrap();
+	ScavTrap(const std::string &name);
+	ScavTrap(const ScavTrap &other);
+	~ScavTrap();
+
+	ScavTrap &operator=(const ScavTrap &other);
+
+	void attack(const std::string &target);
+	void guardGate();
+};
+
+#endif

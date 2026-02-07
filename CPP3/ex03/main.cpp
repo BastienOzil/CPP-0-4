@@ -5,22 +5,22 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/02 11:29:39 by bozil             #+#    #+#             */
-/*   Updated: 2026/02/04 12:09:58 by bozil            ###   ########.fr       */
+/*   Created: 2026/02/04 12:27:58 by bozil             #+#    #+#             */
+/*   Updated: 2026/02/04 12:28:00 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ClapTrap.hpp"
+#include "DiamondTrap.hpp"
 
 int main()
 {
-	ClapTrap clap("CL4P-TP");
-	
-	clap.attack("Enemy");
-	clap.takeDamage(5);
-	clap.beRepaired(3);
-	clap.takeDamage(15);
-	clap.attack("Target");
-	
+	DiamondTrap diamond("Hero");
+
+	diamond.whoAmI();
+	diamond.attack("Enemy");
+	diamond.takeDamage(50);
+	diamond.guardGate();
+	diamond.highFivesGuys();
+
 	return (0);
 }

@@ -1,0 +1,3378 @@
+Notes sur le C++
+
+CPP0 ex00 - Les bases du C++ (megaphone)
+----------------------------------------
+NOUVELLES NOTIONS:
+- std::cout et std::endl (streams de sortie)
+- std::string (classe de chaînes)
+- Namespace std::
+- toupper() pour la manipulation de caractères vers les majuscule (tolower pour minuscule)
+
+═══════════════════════════════════════════════════════════════════════════════
+1. std::cout et std::endl
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Afficher du texte et des variables dans le terminal (console).
+    C'est l'équivalent C++ du printf() en C, mais plus sûr et plus simple.
+
+COMMENT L'UTILISER:
+    Syntaxe de base: std::cout << "texte" << variable << std::endl;
+    
+    - L'opérateur << signifie "envoyer vers"
+    - On peut chaîner plusieurs << pour afficher plusieurs choses
+    - std::endl termine la ligne et vide le buffer (comme \n + flush)
+    
+    Avantages par rapport à printf:
+    - Pas besoin de spécifier le type (%d, %s, etc.)
+    - Détection automatique du type
+    - Plus sûr (pas d'erreurs de format)
+
+EXEMPLE:
+    int age = 25;
+    std::string nom = "Alice";
+    
+    std::cout << "Bonjour " << nom << std::endl;
+    // Affiche: Bonjour Alice
+    
+    std::cout << "Tu as " << age << " ans" << std::endl;
+    // Affiche: Tu as 25 ans
+    
+    // Chaînage multiple
+    std::cout << "Nom: " << nom << ", Age: " << age << std::endl;
+    // Affiche: Nom: Alice, Age: 25
+
+═══════════════════════════════════════════════════════════════════════════════
+2. std::string
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Gérer des chaînes de caractères de manière sûre et facile.
+    Remplace char* et char[] du C en gérant automatiquement la mémoire.
+
+COMMENT L'UTILISER:
+    Déclaration: std::string variable = "texte";
+    
+    Opérations courantes:
+    - variable[i] : accéder au caractère à la position i
+    - variable.length() ou variable.size() : obtenir la longueur
+    - variable + "texte" : concaténer des strings
+    - variable.substr(pos, len) : extraire une sous-chaîne
+    - variable.find("mot") : chercher un mot
+    - variable.empty() : vérifier si vide
+    
+    Avantages:
+    - Pas besoin de malloc/free
+    - Redimensionnement automatique
+    - Opérateurs intuitifs (+, ==, <, etc.)
+
+EXEMPLE:
+    std::string prenom = "Jean";
+    std::string nom = "Dupont";
+    
+    // Concaténation
+    std::string nomComplet = prenom + " " + nom;
+    std::cout << nomComplet << std::endl;
+    // Affiche: Jean Dupont
+    
+    // Accès aux caractères
+    for (size_t i = 0; i < prenom.length(); i++)
+        std::cout << prenom[i] << std::endl;
+    // Affiche: J e a n (un par ligne)
+    
+    // Modification
+    prenom[0] = 'M';  // Change 'J' en 'M'
+    std::cout << prenom << std::endl;
+    // Affiche: Mean
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Namespace std::
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Organiser le code et éviter les conflits de noms.
+    Tous les éléments de la bibliothèque standard C++ sont dans le namespace std.
+
+COMMENT L'UTILISER:
+    Trois façons d'utiliser les namespaces:
+    
+    1. Préfixer chaque utilisation (RECOMMANDÉ à 42):
+       std::cout << "texte" << std::endl;
+       std::string nom;
+    
+    2. using pour un élément spécifique:
+       using std::cout;
+       cout << "texte" << std::endl;  // Plus besoin de std::
+    
+    3. using namespace std; (À ÉVITER à 42):
+       Importe tout le namespace
+       Peut créer des conflits
+
+EXEMPLE:
+    // MÉTHODE 1 (Recommandée à 42)
+    #include <iostream>
+    #include <string>
+    
+    int main() {
+        std::string message = "Bonjour";
+        std::cout << message << std::endl;
+        return 0;
+    }
+    
+    // MÉTHODE 2 (Acceptable)
+    #include <iostream>
+    #include <string>
+    using std::cout;
+    using std::endl;
+    using std::string;
+    
+    int main() {
+        string message = "Bonjour";
+        cout << message << endl;
+        return 0;
+    }
+    
+    // MÉTHODE 3 (Interdit à 42)
+    #include <iostream>
+    #include <string>
+    using namespace std;  // ❌ NE PAS FAIRE
+    
+    int main() {
+        string message = "Bonjour";
+        cout << message << endl;
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+4. toupper() et tolower()
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Convertir un caractère en majuscule (toupper) ou minuscule (tolower).
+
+COMMENT L'UTILISER:
+    #include <cctype>  // Pour toupper et tolower
+    
+    char result = toupper(caractere);  // Convertit en majuscule
+    char result = tolower(caractere);  // Convertit en minuscule
+    
+    IMPORTANT: 
+    - Fonctionne sur UN SEUL caractère (char)
+    - Pour une string, il faut parcourir chaque caractère
+    - Si le caractère est déjà en majuscule/minuscule, il reste inchangé
+
+EXEMPLE:
+    #include <iostream>
+    #include <string>
+    #include <cctype>
+    
+    int main() {
+        std::string str = "Bonjour 42!";
+        
+        // Convertir toute la string en majuscules
+        for (size_t i = 0; i < str.length(); i++) {
+            str[i] = toupper(str[i]);
+        }
+        std::cout << str << std::endl;
+        // Affiche: BONJOUR 42!
+        
+        // Convertir en minuscules
+        for (size_t i = 0; i < str.length(); i++) {
+            str[i] = tolower(str[i]);
+        }
+        std::cout << str << std::endl;
+        // Affiche: bonjour 42!
+        
+        return 0;
+    }
+
+CPP0 EX01 - Première classe (PhoneBook)
+----------------------------------------
+NOUVELLES NOTIONS:
+- Déclaration de classes (class)
+- Attributs privés (private:)
+- Méthodes publiques (public:)
+- Constructeur et destructeur
+- Méthodes const
+- std::getline() pour la saisie
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Les classes (class)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer un nouveau type de données qui regroupe des données (attributs) et
+    des fonctions (méthodes) qui agissent sur ces données. C'est la base de
+    la programmation orientée objet (POO).
+
+COMMENT L'UTILISER:
+    Syntaxe dans le fichier .hpp:
+    
+    class NomClasse {
+    private:
+        // Attributs et méthodes privés (inaccessibles de l'extérieur)
+        
+    public:
+        // Attributs et méthodes publics (accessibles de l'extérieur)
+    };  // N'oubliez pas le point-virgule !
+    
+    Utilisation:
+    NomClasse objet;              // Création d'un objet
+    objet.methodepublic();        // Appel d'une méthode publique
+
+EXEMPLE:
+    // Fichier Contact.hpp
+    class Contact {
+    private:
+        std::string _firstName;   // Convention: _ pour les attributs privés
+        std::string _lastName;
+        int         _age;
+        
+    public:
+        // Méthode pour définir le prénom
+        void setFirstName(std::string name);
+        
+        // Méthode pour obtenir le prénom
+        std::string getFirstName(void) const;
+    };
+    
+    // Utilisation dans main.cpp:
+    Contact c;
+    c.setFirstName("Alice");
+    std::cout << c.getFirstName() << std::endl;  // Affiche: Alice
+    // c._firstName = "Bob";  // ❌ ERREUR : _firstName est privé !
+
+═══════════════════════════════════════════════════════════════════════════════
+2. private: et public:
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Contrôler l'accès aux membres de la classe (encapsulation).
+    - private: protège les données des modifications non contrôlées
+    - public: définit l'interface accessible de la classe
+
+COMMENT L'UTILISER:
+    class MaClasse {
+    private:
+        // Accessible uniquement dans la classe elle-même
+        int _donneeSecrete;
+        void _methodeInterne(void);
+        
+    public:
+        // Accessible depuis n'importe où
+        void methodepublique(void);
+        int getValeur(void) const;
+    };
+    
+    Règle générale:
+    - Mettre les attributs en private
+    - Créer des getters/setters en public si nécessaire
+    - Cela permet de contrôler et valider les accès
+
+EXEMPLE:
+    class BankAccount {
+    private:
+        double _balance;    // Solde (privé pour la sécurité)
+        
+    public:
+        // Constructeur
+        BankAccount(void) : _balance(0) {}
+        
+        // Getter (lecture seule)
+        double getBalance(void) const {
+            return _balance;
+        }
+        
+        // Méthode contrôlée pour modifier le solde
+        bool deposit(double amount) {
+            if (amount > 0) {           // Validation
+                _balance += amount;
+                return true;
+            }
+            return false;
+        }
+    };
+    
+    // Utilisation:
+    BankAccount compte;
+    // compte._balance = 1000000;  // ❌ ERREUR : _balance est privé
+    compte.deposit(100);            // ✓ OK : méthode publique contrôlée
+    std::cout << compte.getBalance() << std::endl;  // Affiche: 100
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Constructeur et Destructeur
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    - Constructeur: initialiser l'objet lors de sa création
+    - Destructeur: nettoyer les ressources avant la destruction de l'objet
+
+COMMENT L'UTILISER:
+    class MaClasse {
+    public:
+        MaClasse(void);              // Constructeur (même nom que la classe)
+        MaClasse(int x, int y);      // Constructeur avec paramètres
+        ~MaClasse(void);             // Destructeur (~ devant le nom)
+    };
+    
+    Caractéristiques:
+    - Constructeur: appelé automatiquement à la création
+    - Destructeur: appelé automatiquement à la destruction
+    - Pas de type de retour (même pas void)
+    - Le destructeur n'a jamais de paramètres
+
+EXEMPLE:
+    class Zombie {
+    private:
+        std::string _name;
+        
+    public:
+        // Constructeur par défaut
+        Zombie(void) {
+            std::cout << "Un zombie anonyme est créé" << std::endl;
+            _name = "Anonymous";
+        }
+        
+        // Constructeur avec paramètre
+        Zombie(std::string name) : _name(name) {
+            std::cout << "Le zombie " << _name << " est créé" << std::endl;
+        }
+        
+        // Destructeur
+        ~Zombie(void) {
+            std::cout << "Le zombie " << _name << " est détruit" << std::endl;
+        }
+        
+        void announce(void) {
+            std::cout << _name << ": BraiiiiiiinnnzzzZ..." << std::endl;
+        }
+    };
+    
+    // Utilisation:
+    int main() {
+        Zombie z1;              // Constructeur par défaut
+        // Affiche: Un zombie anonyme est créé
+        
+        Zombie z2("Bob");       // Constructeur avec paramètre
+        // Affiche: Le zombie Bob est créé
+        
+        z2.announce();
+        // Affiche: Bob: BraiiiiiiinnnzzzZ...
+        
+        return 0;
+        // À la fin, les destructeurs sont appelés automatiquement:
+        // Affiche: Le zombie Bob est détruit
+        // Affiche: Le zombie Anonymous est détruit
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+4. Méthodes const
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Garantir qu'une méthode ne modifie pas l'état de l'objet.
+    C'est une promesse au compilateur et aux utilisateurs de la classe.
+
+COMMENT L'UTILISER:
+    Syntaxe: TypeRetour nomMethode(parametres) const { ... }
+    
+    Le mot-clé "const" se place après les parenthèses.
+    
+    Règle:
+    - Les getters sont généralement const (ils lisent seulement)
+    - Les setters ne sont jamais const (ils modifient)
+    - Une méthode const ne peut appeler que d'autres méthodes const
+
+EXEMPLE:
+    class Rectangle {
+    private:
+        int _width;
+        int _height;
+        
+    public:
+        Rectangle(int w, int h) : _width(w), _height(h) {}
+        
+        // Getters: const car ils ne modifient pas l'objet
+        int getWidth(void) const {
+            return _width;
+        }
+        
+        int getHeight(void) const {
+            return _height;
+        }
+        
+        // Méthode de calcul: const car elle ne modifie pas l'objet
+        int getArea(void) const {
+            return _width * _height;
+        }
+        
+        // Setter: PAS const car il modifie l'objet
+        void setWidth(int w) {
+            _width = w;
+        }
+    };
+    
+    // Utilisation:
+    void afficherAire(const Rectangle& rect) {  // Paramètre const
+        // rect.setWidth(10);     // ❌ ERREUR : rect est const
+        std::cout << rect.getArea() << std::endl;  // ✓ OK : getArea est const
+    }
+    
+    int main() {
+        Rectangle r(5, 10);
+        afficherAire(r);  // Affiche: 50
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+5. std::getline()
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Lire une ligne complète de texte depuis l'entrée standard (clavier).
+    Contrairement à std::cin >>, getline lit TOUTE la ligne, espaces inclus.
+
+COMMENT L'UTILISER:
+    #include <iostream>
+    #include <string>
+    
+    std::string ligne;
+    std::getline(std::cin, ligne);
+    
+    Différences avec std::cin >>:
+    - std::cin >> s'arrête au premier espace
+    - std::getline() lit jusqu'au retour à la ligne (\n)
+
+EXEMPLE:
+    #include <iostream>
+    #include <string>
+    
+    int main() {
+        std::string nom, prenom, phrase;
+        
+        // Avec std::cin >> (s'arrête aux espaces)
+        std::cout << "Entrez votre prénom: ";
+        std::cin >> prenom;
+        // Si on tape "Jean Pierre", seul "Jean" sera lu
+        
+        // Avec std::getline (lit toute la ligne)
+        std::cout << "Entrez votre nom complet: ";
+        std::cin.ignore();  // Ignore le \n restant du cin précédent
+        std::getline(std::cin, nom);
+        // Si on tape "Jean Pierre Dupont", tout sera lu
+        
+        std::cout << "Bonjour " << nom << std::endl;
+        
+        return 0;
+    }
+    
+    // Exemple d'exécution:
+    // Entrez votre prénom: Jean Pierre
+    // Entrez votre nom complet: Marie Curie
+    // Bonjour Marie Curie
+
+CPP0 EX02 - Membres statiques (Account)
+----------------------------------------
+NOUVELLES NOTIONS:
+- Membres statiques (static)
+- Fonctions membres statiques
+- Initialisation de variables statiques hors de la classe
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Attributs statiques (static)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer une variable partagée par TOUTES les instances d'une classe.
+    Au lieu que chaque objet ait sa propre copie, il n'existe qu'UNE SEULE
+    copie partagée par tous. Utile pour compter le nombre d'instances, ou
+    stocker des données communes à tous les objets.
+
+COMMENT L'UTILISER:
+    1. Déclarer dans le .hpp:
+       class MaClasse {
+       private:
+           static int _compteur;  // Déclaration
+       };
+    
+    2. Initialiser dans le .cpp (OBLIGATOIRE):
+       int MaClasse::_compteur = 0;  // Initialisation HORS de la classe
+    
+    3. Accéder dans les méthodes:
+       _compteur++;  // Comme une variable normale
+
+EXEMPLE:
+    // Fichier Account.hpp
+    class Account {
+    private:
+        static int _nbAccounts;      // Partagé par tous les comptes
+        static int _totalAmount;     // Somme totale de tous les comptes
+        int        _amount;          // Propre à chaque compte
+        
+    public:
+        Account(int initial_deposit);
+        ~Account(void);
+        static int getNbAccounts(void);
+    };
+    
+    // Fichier Account.cpp
+    // IMPORTANT: Initialisation OBLIGATOIRE hors de la classe
+    int Account::_nbAccounts = 0;
+    int Account::_totalAmount = 0;
+    
+    Account::Account(int initial_deposit) : _amount(initial_deposit) {
+        _nbAccounts++;              // Incrémente le compteur partagé
+        _totalAmount += _amount;    // Ajoute au total partagé
+        std::cout << "Compte #" << _nbAccounts << " créé" << std::endl;
+    }
+    
+    Account::~Account(void) {
+        _nbAccounts--;              // Décrémente le compteur
+        _totalAmount -= _amount;
+        std::cout << "Compte détruit, reste " << _nbAccounts << std::endl;
+    }
+    
+    // Utilisation:
+    int main() {
+        Account a1(100);  // Affiche: Compte #1 créé
+        Account a2(200);  // Affiche: Compte #2 créé
+        Account a3(50);   // Affiche: Compte #3 créé
+        
+        // _nbAccounts vaut 3 (partagé par tous)
+        // _totalAmount vaut 350 (100 + 200 + 50)
+        
+        return 0;
+        // Destructeurs appelés:
+        // Affiche: Compte détruit, reste 2
+        // Affiche: Compte détruit, reste 1
+        // Affiche: Compte détruit, reste 0
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Méthodes statiques (static functions)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer une fonction qui peut être appelée SANS avoir besoin de créer un
+    objet. Utile pour des fonctions utilitaires ou pour accéder aux attributs
+    statiques. Une méthode statique n'a pas accès à "this" car elle ne
+    dépend d'aucune instance particulière.
+
+COMMENT L'UTILISER:
+    1. Déclarer dans le .hpp:
+       class MaClasse {
+       public:
+           static int getFonction(void);
+       };
+    
+    2. Implémenter dans le .cpp (SANS le mot static):
+       int MaClasse::getFonction(void) {
+           return _attributStatique;  // Accès uniquement aux membres static
+           // return _attributNormal;  // ❌ ERREUR : pas d'accès à this
+       }
+    
+    3. Appeler:
+       int val = MaClasse::getFonction();  // Pas besoin d'objet !
+
+EXEMPLE:
+    // Fichier Account.hpp
+    class Account {
+    private:
+        static int _nbAccounts;
+        static int _totalAmount;
+        int        _amount;
+        
+    public:
+        Account(int deposit);
+        
+        // Méthodes statiques
+        static int getNbAccounts(void);
+        static int getTotalAmount(void);
+        static void displayAccountsInfos(void);
+    };
+    
+    // Fichier Account.cpp
+    int Account::_nbAccounts = 0;
+    int Account::_totalAmount = 0;
+    
+    Account::Account(int deposit) : _amount(deposit) {
+        _nbAccounts++;
+        _totalAmount += _amount;
+    }
+    
+    // Implémentation des méthodes statiques (SANS le mot static)
+    int Account::getNbAccounts(void) {
+        return _nbAccounts;
+    }
+    
+    int Account::getTotalAmount(void) {
+        return _totalAmount;
+    }
+    
+    void Account::displayAccountsInfos(void) {
+        std::cout << "Nombre de comptes: " << _nbAccounts << std::endl;
+        std::cout << "Montant total: " << _totalAmount << std::endl;
+    }
+    
+    // Utilisation:
+    int main() {
+        // Appel SANS créer d'objet
+        std::cout << "Au début: " << Account::getNbAccounts() << std::endl;
+        // Affiche: Au début: 0
+        
+        Account a1(100);
+        Account a2(200);
+        
+        // Appel avec le nom de la classe
+        Account::displayAccountsInfos();
+        // Affiche:
+        // Nombre de comptes: 2
+        // Montant total: 300
+        
+        // On peut aussi appeler via un objet (mais pas recommandé)
+        a1.displayAccountsInfos();  // Fonctionne mais confus
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+RÉSUMÉ: static vs non-static
+═══════════════════════════════════════════════════════════════════════════════
+
+    Attribut non-static:
+    - Chaque objet a sa propre copie
+    - Accès via un objet: objet.attribut
+    - Existe seulement si un objet existe
+    
+    Attribut static:
+    - Une seule copie partagée par tous
+    - Accès via la classe: Classe::attribut
+    - Existe même sans aucun objet
+    
+    Méthode non-static:
+    - Besoin d'un objet pour l'appeler
+    - A accès à this et tous les membres
+    - Appel: objet.methode()
+    
+    Méthode static:
+    - Pas besoin d'objet
+    - PAS d'accès à this ou membres non-static
+    - Appel: Classe::methode()
+
+
+CPP1 EX00 - Allocation dynamique (new/delete)
+----------------------------------------------
+NOUVELLES NOTIONS:
+- new : allocation dynamique sur le tas (heap)
+- delete : libération de mémoire dynamique
+- Distinction stack vs heap
+
+═══════════════════════════════════════════════════════════════════════════════
+1. new - Allocation dynamique
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer un objet qui persiste au-delà de la fonction qui l'a créé.
+    L'objet est alloué sur le "heap" (tas) et non sur la "stack" (pile).
+    C'est l'équivalent C++ du malloc() en C, mais en mieux.
+
+COMMENT L'UTILISER:
+    Syntaxe: Type* pointeur = new Type(paramètres_constructeur);
+    
+    - new alloue l'objet sur le heap
+    - Appelle automatiquement le constructeur
+    - Retourne un pointeur vers l'objet créé
+    - L'objet existe jusqu'à ce qu'on appelle delete
+
+EXEMPLE:
+    class Zombie {
+    private:
+        std::string _name;
+    public:
+        Zombie(std::string name) : _name(name) {
+            std::cout << _name << " créé" << std::endl;
+        }
+        ~Zombie(void) {
+            std::cout << _name << " détruit" << std::endl;
+        }
+        void announce(void) {
+            std::cout << _name << ": BraiiiiinnnzzzZ..." << std::endl;
+        }
+    };
+    
+    Zombie* createZombie(std::string name) {
+        Zombie* z = new Zombie(name);  // Allocation avec new
+        return z;  // Le zombie continue d'exister après le return
+    }
+    
+    int main() {
+        Zombie* zombie1 = createZombie("Bob");
+        // Affiche: Bob créé
+        
+        zombie1->announce();  // Utiliser -> pour les pointeurs
+        // Affiche: Bob: BraiiiiinnnzzzZ...
+        
+        delete zombie1;  // IMPORTANT: libérer la mémoire
+        // Affiche: Bob détruit
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+2. delete - Libération de mémoire
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Libérer la mémoire allouée par new et appeler le destructeur.
+    ABSOLUMENT OBLIGATOIRE pour éviter les fuites mémoire (memory leaks).
+
+COMMENT L'UTILISER:
+    Syntaxe: delete pointeur;
+    
+    Règles:
+    - Toujours delete ce qui a été alloué avec new
+    - Ne jamais delete deux fois le même pointeur
+    - delete appelle le destructeur puis libère la mémoire
+    - Après delete, ne plus utiliser le pointeur (pointeur invalide)
+
+EXEMPLE:
+    void exemple() {
+        Zombie* z1 = new Zombie("Alice");
+        Zombie* z2 = new Zombie("Bob");
+        
+        z1->announce();
+        z2->announce();
+        
+        delete z1;  // Libère Alice
+        delete z2;  // Libère Bob
+        
+        // z1->announce();  // ❌ ERREUR : z1 est invalide après delete
+        // delete z1;       // ❌ ERREUR : double delete (crash)
+    }
+    
+    // Exemple de fuite mémoire (memory leak):
+    void mauvaisExemple() {
+        Zombie* z = new Zombie("Leak");
+        // Oubli du delete !
+        return;
+        // La mémoire de z n'est JAMAIS libérée
+        // C'est une fuite mémoire (memory leak)
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Stack vs Heap
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Comprendre où et comment vos objets sont stockés en mémoire.
+    Choisir entre allocation stack et heap selon vos besoins.
+
+STACK (Pile):
+    - Variables locales automatiques
+    - Durée de vie = scope de la fonction
+    - Gestion automatique (pas de delete)
+    - Rapide mais taille limitée
+    - Libération automatique à la fin du scope
+    
+HEAP (Tas):
+    - Allocation avec new
+    - Durée de vie = jusqu'au delete
+    - Gestion manuelle (DOIT delete)
+    - Plus lent mais taille flexible
+    - Risque de fuites mémoire si oubli du delete
+
+COMMENT CHOISIR:
+    Utiliser STACK quand:
+    - La durée de vie = durée de la fonction
+    - La taille est connue à la compilation
+    - Pas besoin de retourner l'objet
+    
+    Utiliser HEAP quand:
+    - L'objet doit survivre à la fonction
+    - La taille est déterminée à l'exécution
+    - L'objet est très gros
+
+EXEMPLE:
+    void compareStackHeap() {
+        // ═══ STACK ═══
+        Zombie stackZombie("StackBob");  // Allocation stack
+        stackZombie.announce();
+        // Pas de delete nécessaire
+        // stackZombie est automatiquement détruit à la fin de la fonction
+        
+        // ═══ HEAP ═══
+        Zombie* heapZombie = new Zombie("HeapAlice");  // Allocation heap
+        heapZombie->announce();
+        delete heapZombie;  // OBLIGATOIRE
+        // Si on oublie le delete, fuite mémoire !
+    }
+    
+    // Exemple: quand utiliser le HEAP
+    Zombie* createZombie(std::string name) {
+        // Zombie z(name);    // ❌ ERREUR : z sera détruit en sortant
+        // return &z;         // ❌ Retourne un pointeur invalide !
+        
+        Zombie* z = new Zombie(name);  // ✓ OK : survit à la fonction
+        return z;
+    }
+    
+    int main() {
+        Zombie* z = createZombie("Bob");  // Bob existe toujours
+        z->announce();
+        delete z;  // Libération
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+RÉSUMÉ: new vs Stack
+═══════════════════════════════════════════════════════════════════════════════
+
+    STACK (automatique):
+        Zombie z("Bob");
+        - Créé automatiquement
+        - Détruit automatiquement en fin de scope
+        - Accès: z.methode()
+        
+    HEAP (new/delete):
+        Zombie* z = new Zombie("Bob");
+        - Créé manuellement avec new
+        - Détruit manuellement avec delete
+        - Accès: z->methode()
+        - Survit à la fonction
+        - Risque de fuite si oubli du delete
+
+CPP1 EX01 - Allocation de tableaux (new[]/delete[])
+----------------------------------------------------
+NOUVELLES NOTIONS:
+- new[] : allocation de tableaux dynamiques
+- delete[] : libération de tableaux dynamiques
+
+═══════════════════════════════════════════════════════════════════════════════
+1. new[] - Allocation de tableaux
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer un tableau d'objets dont la taille est déterminée à l'exécution.
+    Tous les objets du tableau sont créés sur le heap.
+
+COMMENT L'UTILISER:
+    Syntaxe: Type* tableau = new Type[taille];
+    
+    - new[] alloue un tableau de N objets
+    - Appelle le constructeur par défaut pour CHAQUE élément
+    - Retourne un pointeur vers le premier élément
+    - Accès aux éléments: tableau[i]
+
+EXEMPLE:
+    class Zombie {
+    private:
+        std::string _name;
+    public:
+        Zombie(void) : _name("Unnamed") {
+            std::cout << "Zombie créé" << std::endl;
+        }
+        ~Zombie(void) {
+            std::cout << "Zombie " << _name << " détruit" << std::endl;
+        }
+        void setName(std::string name) { _name = name; }
+        void announce(void) {
+            std::cout << _name << ": BraiiiiinnnzzzZ..." << std::endl;
+        }
+    };
+    
+    Zombie* zombieHorde(int N, std::string name) {
+        Zombie* horde = new Zombie[N];  // Crée N zombies
+        // Affiche "Zombie créé" N fois
+        
+        // Nommer chaque zombie
+        for (int i = 0; i < N; i++) {
+            horde[i].setName(name);
+        }
+        
+        return horde;
+    }
+    
+    int main() {
+        int N = 5;
+        Zombie* horde = zombieHorde(N, "Bob");
+        // Affiche "Zombie créé" 5 fois
+        
+        // Utiliser la horde
+        for (int i = 0; i < N; i++) {
+            horde[i].announce();
+            // Affiche: Bob: BraiiiiinnnzzzZ...
+        }
+        
+        delete[] horde;  // IMPORTANT: delete[] et non delete
+        // Affiche "Zombie Bob détruit" 5 fois
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+2. delete[] - Libération de tableaux
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Libérer un tableau alloué avec new[] et appeler le destructeur de CHAQUE
+    élément du tableau.
+
+COMMENT L'UTILISER:
+    Syntaxe: delete[] pointeur;
+    
+    Règles CRITIQUES:
+    - Utiliser delete[] pour un tableau (new[])
+    - Utiliser delete pour un objet unique (new)
+    - NE JAMAIS mélanger les deux
+    
+    delete[] vs delete:
+    - delete[] : appelle le destructeur pour TOUS les éléments
+    - delete : appelle le destructeur pour UN SEUL élément
+
+EXEMPLE:
+    void exempleBonUsage() {
+        // ═══ Objet unique ═══
+        Zombie* z1 = new Zombie();     // new (sans [])
+        delete z1;                      // delete (sans [])
+        
+        // ═══ Tableau d'objets ═══
+        Zombie* horde = new Zombie[5];  // new[] (avec [])
+        delete[] horde;                 // delete[] (avec [])
+    }
+    
+    void exempleMauvaisUsage() {
+        Zombie* horde = new Zombie[5];
+        
+        // ❌ ERREUR: utiliser delete au lieu de delete[]
+        delete horde;
+        // Conséquences:
+        // - Seul le premier destructeur est appelé
+        // - Les 4 autres zombies ne sont pas détruits
+        // - Fuite mémoire
+        // - Comportement indéfini
+    }
+    
+    void exempleFuiteMemoire() {
+        Zombie* horde = new Zombie[10];
+        horde[0].announce();
+        // Oubli du delete[] !
+        return;
+        // FUITE MÉMOIRE: 10 zombies jamais libérés
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+RÉSUMÉ: new/delete vs new[]/delete[]
+═══════════════════════════════════════════════════════════════════════════════
+
+    OBJET UNIQUE:
+        Type* obj = new Type(params);
+        // Utilisation...
+        delete obj;
+    
+    TABLEAU D'OBJETS:
+        Type* array = new Type[N];
+        // Utilisation...
+        delete[] array;
+    
+    TABLEAU STATIQUE (pas de new):
+        Type array[N];
+        // Pas de delete nécessaire
+    
+    RÈGLE D'OR:
+        new    → delete
+        new[]  → delete[]
+        Jamais mélanger !
+
+CPP1 EX02 - Références (&)
+---------------------------
+NOUVELLES NOTIONS:
+- Références (&)
+- Différence pointeur vs référence
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Les références (&)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer un alias (autre nom) pour une variable existante.
+    C'est comme donner un surnom à quelqu'un : c'est la même personne,
+    mais avec un autre nom. Utile pour passer des paramètres sans faire
+    de copies coûteuses.
+
+COMMENT L'UTILISER:
+    Syntaxe: Type& reference = variable_existante;
+    
+    Règles:
+    - DOIT être initialisée à la création
+    - Ne peut JAMAIS être réassignée à une autre variable
+    - Ne peut JAMAIS être NULL
+    - S'utilise exactement comme la variable originale
+
+EXEMPLE:
+    int main() {
+        std::string str = "Hello";
+        
+        // Créer une référence
+        std::string& ref = str;  // ref est un alias de str
+        
+        // Modifier via la référence
+        ref = "Bonjour";
+        std::cout << str << std::endl;  // Affiche: Bonjour
+        std::cout << ref << std::endl;  // Affiche: Bonjour
+        // str et ref sont LA MÊME variable
+        
+        // Vérification: même adresse mémoire
+        std::cout << &str << std::endl;  // Exemple: 0x7fff5fbff870
+        std::cout << &ref << std::endl;  // Exemple: 0x7fff5fbff870 (identique)
+        
+        // Modifier via l'original
+        str = "Hello again";
+        std::cout << ref << std::endl;  // Affiche: Hello again
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Références vs Pointeurs
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Comprendre quand utiliser & (référence) ou * (pointeur).
+    Les deux permettent d'accéder à une variable indirectement,
+    mais avec des différences importantes.
+
+DIFFÉRENCES CLÉS:
+
+    RÉFÉRENCES (&):
+    - Alias permanent d'une variable
+    - DOIT être initialisée
+    - Ne peut PAS être réassignée
+    - Ne peut PAS être NULL
+    - Syntaxe transparente (comme la variable)
+    - Plus sûr
+    
+    POINTEURS (*):
+    - Adresse d'une variable
+    - Peut être non initialisé
+    - Peut changer de cible
+    - Peut être NULL
+    - Besoin de * pour déréférencer
+    - Plus flexible mais plus dangereux
+
+EXEMPLE COMPARATIF:
+    void exempleReference() {
+        std::string str = "Hello";
+        
+        // ═══ RÉFÉRENCE ═══
+        std::string& ref = str;  // Alias de str
+        ref = "Bonjour";         // Modifie str
+        std::cout << str;        // Affiche: Bonjour
+        
+        // ref = autre;          // ❌ Copie le CONTENU de 'autre' dans str
+                                  // Ne change PAS la cible de ref
+        
+        // ═══ POINTEUR ═══
+        std::string* ptr = &str; // Adresse de str
+        *ptr = "Hello";          // Modifie str (déréférencement avec *)
+        std::cout << str;        // Affiche: Hello
+        
+        std::string autre = "World";
+        ptr = &autre;            // ✓ Change la cible du pointeur
+        *ptr = "New";
+        std::cout << autre;      // Affiche: New
+        std::cout << str;        // Affiche: Hello (inchangé)
+    }
+
+QUAND UTILISER QUOI:
+
+    Utiliser RÉFÉRENCE quand:
+    ✓ Passage de paramètres (éviter copies)
+    ✓ La variable existe toujours
+    ✓ Pas besoin de changer de cible
+    ✓ Syntaxe simple préférée
+    
+    Utiliser POINTEUR quand:
+    ✓ La variable peut ne pas exister (NULL)
+    ✓ Besoin de changer de cible
+    ✓ Allocation dynamique (new)
+    ✓ Tableaux dynamiques
+
+EXEMPLE PRATIQUE:
+    // Fonction avec référence (évite la copie)
+    void afficher(const std::string& str) {  // Pas de copie
+        std::cout << str << std::endl;
+        // str ne peut pas être modifié (const)
+    }
+    
+    // Fonction avec pointeur (peut être NULL)
+    void afficherOuNull(std::string* str) {
+        if (str != NULL) {               // Vérification nécessaire
+            std::cout << *str << std::endl;
+        } else {
+            std::cout << "NULL" << std::endl;
+        }
+    }
+    
+    int main() {
+        std::string msg = "Test";
+        
+        afficher(msg);           // Référence
+        afficherOuNull(&msg);    // Pointeur non-NULL
+        afficherOuNull(NULL);    // Pointeur NULL
+        // afficher(NULL);       // ❌ IMPOSSIBLE: référence ne peut être NULL
+        
+        return 0;
+    }
+
+CPP1 EX03 - Références dans les classes
+----------------------------------------
+NOUVELLES NOTIONS:
+- Références comme membres de classe
+- Initialisation dans la liste d'initialisation
+- Différence référence/pointeur pour les attributs
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Références comme attributs de classe
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer une relation permanente entre un objet et un autre objet externe.
+    L'objet référencé DOIT exister pendant toute la vie de l'objet contenant
+    la référence. Utile pour modéliser des dépendances obligatoires.
+
+COMMENT L'UTILISER:
+    class MaClasse {
+    private:
+        Type& _reference;  // Attribut référence
+    public:
+        // OBLIGATOIRE: initialiser dans la liste d'initialisation
+        MaClasse(Type& obj) : _reference(obj) {}
+    };
+    
+    Règles:
+    - Les références DOIVENT être initialisées dans la liste d'initialisation
+    - Impossible de les initialiser dans le corps du constructeur
+    - Une fois initialisée, la référence ne change jamais de cible
+
+EXEMPLE:
+    class Weapon {
+    private:
+        std::string _type;
+    public:
+        Weapon(std::string type) : _type(type) {}
+        const std::string& getType(void) const { return _type; }
+        void setType(std::string type) { _type = type; }
+    };
+    
+    class HumanA {
+    private:
+        std::string _name;
+        Weapon&     _weapon;  // Référence: l'arme doit TOUJOURS exister
+    public:
+        // Initialisation dans la liste d'initialisation (OBLIGATOIRE)
+        HumanA(std::string name, Weapon& weapon) 
+            : _name(name), _weapon(weapon) {}
+        
+        void attack(void) {
+            std::cout << _name << " attacks with their "
+                      << _weapon.getType() << std::endl;
+        }
+    };
+    
+    int main() {
+        Weapon club("crude spiked club");
+        
+        HumanA bob("Bob", club);  // club DOIT exister
+        bob.attack();
+        // Affiche: Bob attacks with their crude spiked club
+        
+        club.setType("some other type of club");
+        bob.attack();
+        // Affiche: Bob attacks with their some other type of club
+        // bob utilise toujours la même arme (référence permanente)
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Liste d'initialisation
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Initialiser les attributs AVANT l'exécution du corps du constructeur.
+    OBLIGATOIRE pour : références, attributs const, et classes sans
+    constructeur par défaut. Aussi plus efficace que l'assignation.
+
+COMMENT L'UTILISER:
+    Syntaxe:
+    NomClasse(paramètres) 
+        : _attribut1(valeur1), _attribut2(valeur2) 
+    {
+        // Corps du constructeur (peut être vide)
+    }
+    
+    Note: les : introduisent la liste d'initialisation
+
+EXEMPLE:
+    class Example {
+    private:
+        int         _a;
+        std::string _b;
+        const int   _c;     // const: DOIT être initialisé
+        int&        _ref;   // référence: DOIT être initialisée
+    public:
+        // MAUVAIS (ne compile pas):
+        Example(int a, std::string b, int c, int& ref) {
+            _a = a;      // ✓ OK
+            _b = b;      // ✓ OK
+            _c = c;      // ❌ ERREUR: const ne peut être assigné
+            _ref = ref;  // ❌ ERREUR: référence doit être initialisée
+        }
+        
+        // BON (liste d'initialisation):
+        Example(int a, std::string b, int c, int& ref) 
+            : _a(a), _b(b), _c(c), _ref(ref)  // ✓ Tout est initialisé
+        {
+            // Corps vide ou autre code
+        }
+    };
+    
+    // Avantage performance:
+    class Person {
+    private:
+        std::string _name;
+    public:
+        // Moins efficace (construction + assignation)
+        Person(std::string name) {
+            _name = name;  // 1. Construction par défaut, 2. Assignation
+        }
+        
+        // Plus efficace (construction directe)
+        Person(std::string name) : _name(name) {}
+        // 1. Construction avec paramètre (1 seule étape)
+    };
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Référence vs Pointeur comme attribut
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Choisir entre référence et pointeur selon que la relation est
+    obligatoire (référence) ou optionnelle (pointeur).
+
+COMMENT CHOISIR:
+
+    Utiliser RÉFÉRENCE (&) quand:
+    - L'objet doit TOUJOURS exister
+    - La relation est permanente
+    - Pas besoin de changer la cible
+    
+    Utiliser POINTEUR (*) quand:
+    - L'objet peut ne PAS exister (NULL)
+    - La relation est optionnelle
+    - Besoin de changer la cible
+
+EXEMPLE COMPARATIF:
+    class Weapon {
+    private:
+        std::string _type;
+    public:
+        Weapon(std::string type) : _type(type) {}
+        const std::string& getType(void) const { return _type; }
+    };
+    
+    // HumanA: A TOUJOURS une arme (référence)
+    class HumanA {
+    private:
+        std::string _name;
+        Weapon&     _weapon;  // Référence: obligatoire
+    public:
+        HumanA(std::string name, Weapon& weapon) 
+            : _name(name), _weapon(weapon) {}
+        
+        void attack(void) {
+            std::cout << _name << " attacks with " 
+                      << _weapon.getType() << std::endl;
+        }
+    };
+    
+    // HumanB: Peut NE PAS avoir d'arme (pointeur)
+    class HumanB {
+    private:
+        std::string _name;
+        Weapon*     _weapon;  // Pointeur: optionnel (peut être NULL)
+    public:
+        HumanB(std::string name) : _name(name), _weapon(NULL) {}
+        
+        void setWeapon(Weapon& weapon) {
+            _weapon = &weapon;  // Peut changer d'arme
+        }
+        
+        void attack(void) {
+            if (_weapon != NULL) {  // Vérification nécessaire
+                std::cout << _name << " attacks with " 
+                          << _weapon->getType() << std::endl;
+            } else {
+                std::cout << _name << " has no weapon!" << std::endl;
+            }
+        }
+    };
+    
+    int main() {
+        Weapon club("club");
+        Weapon sword("sword");
+        
+        // HumanA: arme obligatoire dès la construction
+        HumanA alice("Alice", club);
+        alice.attack();  // Alice attacks with club
+        
+        // HumanB: arme optionnelle
+        HumanB bob("Bob");
+        bob.attack();           // Bob has no weapon!
+        bob.setWeapon(sword);   // Maintenant Bob a une arme
+        bob.attack();           // Bob attacks with sword
+        bob.setWeapon(club);    // Bob change d'arme
+        bob.attack();           // Bob attacks with club
+        
+        return 0;
+    }
+
+CPP1 EX04 - Manipulation de fichiers (fstream)
+-----------------------------------------------
+NOUVELLES NOTIONS:
+- std::ifstream : lecture de fichiers
+- std::ofstream : écriture de fichiers
+- Méthode .find() et .replace() sur std::string
+
+═══════════════════════════════════════════════════════════════════════════════
+1. std::ifstream - Lecture de fichiers
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Lire le contenu d'un fichier ligne par ligne ou caractère par caractère.
+    ifstream = Input File Stream (flux d'entrée de fichier).
+
+COMMENT L'UTILISER:
+    #include <fstream>
+    
+    std::ifstream fichier("nom_fichier.txt");  // Ouvrir
+    
+    if (!fichier.is_open()) {                  // Vérifier l'ouverture
+        std::cerr << "Erreur ouverture" << std::endl;
+        return;
+    }
+    
+    std::string ligne;
+    while (std::getline(fichier, ligne)) {     // Lire ligne par ligne
+        // Traiter la ligne
+    }
+    
+    fichier.close();                           // Fermer
+
+EXEMPLE:
+    #include <fstream>
+    #include <iostream>
+    #include <string>
+    
+    void lireFichier(const std::string& nomFichier) {
+        std::ifstream fichier(nomFichier);
+        
+        // Vérifier si le fichier s'est bien ouvert
+        if (!fichier.is_open()) {
+            std::cerr << "Erreur: impossible d'ouvrir " 
+                      << nomFichier << std::endl;
+            return;
+        }
+        
+        std::string ligne;
+        int numeroLigne = 1;
+        
+        // Lire le fichier ligne par ligne
+        while (std::getline(fichier, ligne)) {
+            std::cout << numeroLigne << ": " << ligne << std::endl;
+            numeroLigne++;
+        }
+        
+        fichier.close();
+    }
+    
+    int main() {
+        lireFichier("test.txt");
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+2. std::ofstream - Écriture de fichiers
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Écrire du texte dans un fichier. Crée le fichier s'il n'existe pas,
+    ou écrase son contenu s'il existe déjà.
+    ofstream = Output File Stream (flux de sortie de fichier).
+
+COMMENT L'UTILISER:
+    #include <fstream>
+    
+    std::ofstream fichier("sortie.txt");       // Ouvrir (écrase)
+    // ou
+    std::ofstream fichier("sortie.txt", std::ios::app);  // Mode append
+    
+    if (!fichier.is_open()) {                  // Vérifier
+        return;
+    }
+    
+    fichier << "Texte" << std::endl;           // Écrire
+    
+    fichier.close();                           // Fermer
+
+EXEMPLE:
+    #include <fstream>
+    #include <iostream>
+    #include <string>
+    
+    void ecrireFichier(const std::string& nomFichier) {
+        std::ofstream fichier(nomFichier);
+        
+        if (!fichier.is_open()) {
+            std::cerr << "Erreur: impossible de créer " 
+                      << nomFichier << std::endl;
+            return;
+        }
+        
+        fichier << "Première ligne" << std::endl;
+        fichier << "Deuxième ligne" << std::endl;
+        fichier << "Nombre: " << 42 << std::endl;
+        
+        fichier.close();
+        std::cout << "Fichier créé avec succès!" << std::endl;
+    }
+    
+    int main() {
+        ecrireFichier("output.txt");
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Méthodes sur std::string
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Rechercher et remplacer du texte dans une chaîne.
+
+COMMENT L'UTILISER:
+    // .find() : chercher une sous-chaîne
+    size_t pos = str.find("motif");
+    if (pos != std::string::npos) {  // Si trouvé
+        // Utiliser pos
+    }
+    
+    // .substr() : extraire une sous-chaîne
+    std::string sub = str.substr(debut, longueur);
+    
+    // Remplacer (manuel, pas de .replace() direct):
+    str.erase(pos, longueur);        // Supprimer
+    str.insert(pos, "nouveau");      // Insérer
+
+EXEMPLE COMPLET - Remplacer dans un fichier:
+    #include <fstream>
+    #include <iostream>
+    #include <string>
+    
+    void remplacer(std::string& str, 
+                   const std::string& s1, 
+                   const std::string& s2) {
+        size_t pos = 0;
+        
+        // Trouver et remplacer toutes les occurrences
+        while ((pos = str.find(s1, pos)) != std::string::npos) {
+            str.erase(pos, s1.length());     // Supprimer s1
+            str.insert(pos, s2);              // Insérer s2
+            pos += s2.length();               // Avancer
+        }
+    }
+    
+    int main(int argc, char** argv) {
+        if (argc != 4) {
+            std::cerr << "Usage: " << argv[0] 
+                      << " <fichier> <s1> <s2>" << std::endl;
+            return 1;
+        }
+        
+        std::string nomFichier = argv[1];
+        std::string s1 = argv[2];
+        std::string s2 = argv[3];
+        
+        // Lire le fichier
+        std::ifstream infile(nomFichier);
+        if (!infile.is_open()) {
+            std::cerr << "Erreur: fichier introuvable" << std::endl;
+            return 1;
+        }
+        
+        std::string contenu;
+        std::string ligne;
+        while (std::getline(infile, ligne)) {
+            contenu += ligne + "\n";
+        }
+        infile.close();
+        
+        // Remplacer
+        remplacer(contenu, s1, s2);
+        
+        // Écrire dans un nouveau fichier
+        std::ofstream outfile(nomFichier + ".replace");
+        if (!outfile.is_open()) {
+            std::cerr << "Erreur: impossible de créer le fichier" << std::endl;
+            return 1;
+        }
+        
+        outfile << contenu;
+        outfile.close();
+        
+        std::cout << "Remplacement effectué!" << std::endl;
+        return 0;
+    }
+    
+    // Exemple d'utilisation:
+    // ./replace test.txt "hello" "bonjour"
+    // Remplace tous les "hello" par "bonjour" dans test.txt
+    // Résultat dans test.txt.replace
+
+CPP1 EX05/EX06 - Pointeurs sur fonctions membres
+-------------------------------------------------
+NOUVELLES NOTIONS:
+- Pointeurs sur méthodes de classe
+- Syntaxe (Class::*ptr)(args)
+- Switch/case vs tableau de pointeurs
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Pointeurs sur méthodes de classe
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Stocker l'adresse d'une méthode de classe dans une variable.
+    Permet d'appeler dynamiquement différentes méthodes selon le contexte,
+    sans utiliser de longues chaînes if/else ou switch.
+
+COMMENT L'UTILISER:
+    // Déclaration:
+    void (ClassName::*pointerName)(params);
+    
+    // Assignation:
+    pointerName = &ClassName::methodName;
+    
+    // Appel:
+    (objet.*pointerName)(args);      // Avec un objet
+    (objet_ptr->*pointerName)(args); // Avec un pointeur
+    
+    Syntaxe complexe:
+    - Type de retour: void
+    - (ClassName::*): pointeur sur méthode de ClassName
+    - nom: nom du pointeur
+    - (params): paramètres de la méthode
+
+EXEMPLE DE BASE:
+    class Calculator {
+    public:
+        void add(int a, int b) {
+            std::cout << a << " + " << b << " = " << (a + b) << std::endl;
+        }
+        
+        void subtract(int a, int b) {
+            std::cout << a << " - " << b << " = " << (a - b) << std::endl;
+        }
+    };
+    
+    int main() {
+        Calculator calc;
+        
+        // Déclarer un pointeur sur méthode
+        void (Calculator::*operation)(int, int);
+        
+        // Choisir l'opération
+        char choice = '+';
+        if (choice == '+')
+            operation = &Calculator::add;
+        else
+            operation = &Calculator::subtract;
+        
+        // Appeler la méthode via le pointeur
+        (calc.*operation)(5, 3);
+        // Si choice == '+': affiche "5 + 3 = 8"
+        // Si choice == '-': affiche "5 - 3 = 2"
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Tableau de pointeurs sur méthodes
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Remplacer des switch/case ou des chaînes de if/else par un tableau
+    qui permet de sélectionner et appeler une méthode via un index.
+
+COMMENT L'UTILISER:
+    // Déclarer un tableau de pointeurs sur méthodes:
+    void (ClassName::*array[N])(void) = {
+        &ClassName::method1,
+        &ClassName::method2,
+        &ClassName::method3
+    };
+    
+    // Appeler via un index:
+    (objet.*array[index])();
+
+EXEMPLE - Classe Harl (EX05):
+    class Harl {
+    private:
+        void debug(void) {
+            std::cout << "[DEBUG] Message de debug" << std::endl;
+        }
+        
+        void info(void) {
+            std::cout << "[INFO] Message d'info" << std::endl;
+        }
+        
+        void warning(void) {
+            std::cout << "[WARNING] Attention!" << std::endl;
+        }
+        
+        void error(void) {
+            std::cout << "[ERROR] Erreur!" << std::endl;
+        }
+        
+    public:
+        void complain(std::string level) {
+            // Tableau de pointeurs sur méthodes
+            void (Harl::*functions[4])(void) = {
+                &Harl::debug,
+                &Harl::info,
+                &Harl::warning,
+                &Harl::error
+            };
+            
+            // Tableau des noms de niveaux
+            std::string levels[4] = {
+                "DEBUG", "INFO", "WARNING", "ERROR"
+            };
+            
+            // Trouver le bon index
+            for (int i = 0; i < 4; i++) {
+                if (level == levels[i]) {
+                    (this->*functions[i])();  // Appeler la méthode
+                    return;
+                }
+            }
+            
+            std::cout << "Niveau inconnu: " << level << std::endl;
+        }
+    };
+    
+    int main() {
+        Harl harl;
+        
+        harl.complain("DEBUG");    // Affiche: [DEBUG] Message de debug
+        harl.complain("WARNING");  // Affiche: [WARNING] Attention!
+        harl.complain("INFO");     // Affiche: [INFO] Message d'info
+        harl.complain("UNKNOWN");  // Affiche: Niveau inconnu: UNKNOWN
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Comparaison: switch vs pointeurs sur fonctions
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Comprendre quand utiliser les pointeurs sur fonctions plutôt que
+    les structures de contrôle classiques.
+
+EXEMPLE COMPARATIF:
+
+    // ═══ MÉTHODE 1: Switch/case (EX06) ═══
+    void complainFilter(std::string level) {
+        int levelNum = -1;
+        
+        if (level == "DEBUG") levelNum = 0;
+        else if (level == "INFO") levelNum = 1;
+        else if (level == "WARNING") levelNum = 2;
+        else if (level == "ERROR") levelNum = 3;
+        
+        switch (levelNum) {
+            case 0:
+                std::cout << "[ DEBUG ]" << std::endl;
+                debug();
+                // Fall through
+            case 1:
+                std::cout << "[ INFO ]" << std::endl;
+                info();
+                // Fall through
+            case 2:
+                std::cout << "[ WARNING ]" << std::endl;
+                warning();
+                // Fall through
+            case 3:
+                std::cout << "[ ERROR ]" << std::endl;
+                error();
+                break;
+            default:
+                std::cout << "Niveau inconnu" << std::endl;
+        }
+    }
+    
+    // ═══ MÉTHODE 2: Pointeurs sur fonctions (EX05) ═══
+    void complain(std::string level) {
+        void (Harl::*functions[4])(void) = {
+            &Harl::debug, &Harl::info, 
+            &Harl::warning, &Harl::error
+        };
+        std::string levels[4] = {"DEBUG", "INFO", "WARNING", "ERROR"};
+        
+        for (int i = 0; i < 4; i++) {
+            if (level == levels[i]) {
+                (this->*functions[i])();
+                return;
+            }
+        }
+    }
+
+AVANTAGES des pointeurs sur fonctions:
+    ✓ Code plus court et plus clair
+    ✓ Facile d'ajouter de nouvelles options
+    ✓ Pas de duplication de code
+    ✓ Plus maintenable
+
+AVANTAGES du switch:
+    ✓ Plus lisible pour les débutants
+    ✓ Fall-through naturel (cas EX06)
+    ✓ Peut mélanger différentes actions par cas
+
+
+CPP2 EX00 - Forme canonique orthodoxe (Orthodox Canonical Form)
+---------------------------------------------------------------
+NOUVELLES NOTIONS:
+- Constructeur par copie (Copy Constructor)
+- Opérateur d'assignation (Copy Assignment Operator)
+- La forme canonique orthodoxe (4 éléments obligatoires)
+
+═══════════════════════════════════════════════════════════════════════════════
+1. La Forme Canonique Orthodoxe
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Définir un standard pour toutes les classes C++ afin de gérer correctement
+    la copie, l'assignation, la création et la destruction d'objets.
+    C'est comme une "checklist" que toute classe bien conçue doit suivre.
+
+LES 4 ÉLÉMENTS OBLIGATOIRES:
+
+    1. Constructeur par défaut
+    2. Constructeur par copie
+    3. Opérateur d'assignation (=)
+    4. Destructeur
+
+COMMENT L'UTILISER:
+    class MaClasse {
+    public:
+        MaClasse(void);                              // 1. Constructeur par défaut
+        MaClasse(const MaClasse& other);             // 2. Constructeur par copie
+        MaClasse& operator=(const MaClasse& other);  // 3. Opérateur d'assignation
+        ~MaClasse(void);                             // 4. Destructeur
+    };
+
+EXEMPLE COMPLET:
+    class Fixed {
+    private:
+        int                 _value;
+        static const int    _fractionalBits = 8;
+        
+    public:
+        // 1. Constructeur par défaut
+        Fixed(void) : _value(0) {
+            std::cout << "Default constructor called" << std::endl;
+        }
+        
+        // 2. Constructeur par copie
+        Fixed(const Fixed& other) : _value(other._value) {
+            std::cout << "Copy constructor called" << std::endl;
+        }
+        
+        // 3. Opérateur d'assignation
+        Fixed& operator=(const Fixed& other) {
+            std::cout << "Copy assignment operator called" << std::endl;
+            if (this != &other) {  // Protection auto-assignation
+                this->_value = other._value;
+            }
+            return *this;
+        }
+        
+        // 4. Destructeur
+        ~Fixed(void) {
+            std::cout << "Destructor called" << std::endl;
+        }
+        
+        int getRawBits(void) const { return _value; }
+        void setRawBits(int const raw) { _value = raw; }
+    };
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Constructeur par copie
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer un nouvel objet en copiant un objet existant.
+    Appelé automatiquement dans plusieurs situations.
+
+QUAND EST-IL APPELÉ:
+    - Fixed b = a;           // Initialisation par copie
+    - Fixed b(a);            // Initialisation par copie (même chose)
+    - maFonction(a);         // Passage par valeur
+    - return objet;          // Retour par valeur (parfois)
+
+COMMENT L'UTILISER:
+    Syntaxe: ClassName(const ClassName& other);
+    
+    - Paramètre: const ClassName& (référence constante)
+    - Pourquoi const&? Pour éviter une copie infinie!
+    
+    Implémentation:
+    ClassName(const ClassName& other) 
+        : _attr1(other._attr1), _attr2(other._attr2) 
+    {
+        // Corps (optionnel)
+    }
+
+EXEMPLE:
+    class Person {
+    private:
+        std::string _name;
+        int         _age;
+        
+    public:
+        Person(void) : _name(""), _age(0) {}
+        
+        Person(std::string name, int age) : _name(name), _age(age) {}
+        
+        // Constructeur par copie
+        Person(const Person& other) 
+            : _name(other._name), _age(other._age) 
+        {
+            std::cout << "Copie de " << _name << std::endl;
+        }
+        
+        ~Person(void) {}
+        
+        void display(void) const {
+            std::cout << _name << ", " << _age << " ans" << std::endl;
+        }
+    };
+    
+    int main() {
+        Person alice("Alice", 25);
+        
+        Person bob = alice;       // Constructeur par copie appelé
+        // Affiche: Copie de Alice
+        
+        bob.display();            // Affiche: Alice, 25 ans
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Opérateur d'assignation (=)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Copier les données d'un objet EXISTANT vers un autre objet EXISTANT.
+    Différent du constructeur par copie qui crée un NOUVEL objet.
+
+DIFFÉRENCE avec le constructeur par copie:
+    Fixed a;
+    Fixed b;
+    
+    b = a;           // Opérateur d'assignation (b existe déjà)
+    Fixed c = a;     // Constructeur par copie (c est nouveau)
+
+COMMENT L'UTILISER:
+    Syntaxe: ClassName& operator=(const ClassName& other);
+    
+    Étapes OBLIGATOIRES:
+    1. Vérifier this != &other (auto-assignation)
+    2. Copier les données
+    3. Retourner *this
+    
+    Pourquoi retourner *this?
+    - Permet le chaînage: a = b = c;
+
+EXEMPLE:
+    class Person {
+    private:
+        std::string _name;
+        int         _age;
+        
+    public:
+        Person(void) : _name(""), _age(0) {}
+        
+        Person(const Person& other) 
+            : _name(other._name), _age(other._age) {}
+        
+        // Opérateur d'assignation
+        Person& operator=(const Person& other) {
+            std::cout << "Assignation de " << other._name << std::endl;
+            
+            // 1. Protection auto-assignation
+            if (this != &other) {
+                // 2. Copier les données
+                this->_name = other._name;
+                this->_age = other._age;
+            }
+            
+            // 3. Retourner *this
+            return *this;
+        }
+        
+        ~Person(void) {}
+    };
+    
+    int main() {
+        Person alice("Alice", 25);
+        Person bob("Bob", 30);
+        
+        bob = alice;              // Opérateur d'assignation
+        // Affiche: Assignation de Alice
+        
+        // Chaînage possible:
+        Person charlie;
+        charlie = bob = alice;    // Fonctionne grâce au return *this
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+4. Différences clés: Constructeur par copie vs Opérateur d'assignation
+═══════════════════════════════════════════════════════════════════════════════
+
+    CONSTRUCTEUR PAR COPIE:
+    - Crée un NOUVEL objet
+    - L'objet de gauche n'existe pas encore
+    - Syntaxe: Type obj = autre; ou Type obj(autre);
+    
+    OPÉRATEUR D'ASSIGNATION:
+    - Modifie un objet EXISTANT
+    - L'objet de gauche existe déjà
+    - Syntaxe: obj = autre;
+    
+    EXEMPLE COMPARATIF:
+        Person alice("Alice", 25);
+        
+        Person bob = alice;      // Constructeur par copie (bob est nouveau)
+        
+        Person charlie;          // Constructeur par défaut
+        charlie = alice;         // Opérateur d'assignation (charlie existe)
+        
+        void func(Person p) {}   // Constructeur par copie (paramètre par valeur)
+        func(alice);             // Constructeur par copie appelé
+
+CPP2 EX01 - Constructeurs paramétrés et conversions
+----------------------------------------------------
+NOUVELLES NOTIONS:
+- Constructeurs avec paramètres (int, float)
+- Fonctions de conversion (toInt(), toFloat())
+- Surcharge de l'opérateur << pour std::ostream
+- Nombres à virgule fixe (Fixed Point)
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Nombres à virgule fixe (Fixed Point)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Représenter des nombres décimaux en utilisant uniquement des entiers.
+    Utile quand on n'a pas de support pour les flottants (systèmes embarqués)
+    ou quand on veut des calculs précis et déterministes.
+
+CONCEPT:
+    Au lieu de stocker 42.42 directement (float),
+    on stocke: 42.42 * 256 = 10859 (int)
+    
+    Le nombre 256 = 2^8, où 8 est le nombre de "bits fractionnaires"
+    Plus on a de bits fractionnaires, plus on a de précision.
+
+COMMENT ÇA MARCHE:
+    Avec 8 bits fractionnaires:
+    - Partie entière: bits 8-31
+    - Partie décimale: bits 0-7
+    
+    Conversion float → fixed: value * (2^8) = value * 256
+    Conversion fixed → float: value / (2^8) = value / 256
+
+EXEMPLE:
+    // Représenter 42.42 en virgule fixe (8 bits fractionnaires)
+    float original = 42.42;
+    int fixed = original * 256;  // = 10859
+    
+    // Reconvertir en float
+    float result = (float)fixed / 256;  // = 42.42
+    
+    Avantages:
+    - Précision déterministe (pas d'erreurs d'arrondi float)
+    - Calculs plus rapides sur certains systèmes
+    - Pas besoin de FPU (unité de calcul flottant)
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Constructeurs paramétrés
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer un objet Fixed à partir d'un entier ou d'un flottant.
+    Convertit automatiquement le nombre en représentation virgule fixe.
+
+COMMENT L'UTILISER:
+    class Fixed {
+    private:
+        int                 _value;
+        static const int    _fractionalBits = 8;
+    public:
+        // Constructeur depuis un int
+        Fixed(const int value) {
+            _value = value << _fractionalBits;  // * 256
+        }
+        
+        // Constructeur depuis un float
+        Fixed(const float value) {
+            _value = roundf(value * (1 << _fractionalBits));
+        }
+    };
+    
+    Note:
+    - << est un décalage de bits: value << 8 = value * 2^8
+    - roundf() arrondit pour éviter les erreurs
+
+EXEMPLE:
+    #include <iostream>
+    #include <cmath>  // Pour roundf
+    
+    class Fixed {
+    private:
+        int                 _value;
+        static const int    _fractionalBits = 8;
+        
+    public:
+        Fixed(void) : _value(0) {}
+        
+        // Constructeur depuis int
+        Fixed(const int n) {
+            std::cout << "Int constructor: " << n << std::endl;
+            _value = n << _fractionalBits;
+            // Exemple: 42 << 8 = 42 * 256 = 10752
+        }
+        
+        // Constructeur depuis float
+        Fixed(const float f) {
+            std::cout << "Float constructor: " << f << std::endl;
+            _value = roundf(f * (1 << _fractionalBits));
+            // Exemple: 42.42 * 256 = 10859.52 → roundf → 10860
+        }
+        
+        int getRawBits(void) const { return _value; }
+    };
+    
+    int main() {
+        Fixed a(42);        // Appelle constructeur int
+        Fixed b(42.42f);    // Appelle constructeur float
+        
+        std::cout << "a = " << a.getRawBits() << std::endl;  // 10752
+        std::cout << "b = " << b.getRawBits() << std::endl;  // 10860
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Fonctions de conversion (toInt, toFloat)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Convertir un Fixed (virgule fixe) vers int ou float pour affichage
+    ou calculs avec d'autres types.
+
+COMMENT L'UTILISER:
+    class Fixed {
+    public:
+        int toInt(void) const {
+            return _value >> _fractionalBits;  // / 256
+        }
+        
+        float toFloat(void) const {
+            return (float)_value / (1 << _fractionalBits);
+        }
+    };
+    
+    Note:
+    - >> est un décalage inverse: value >> 8 = value / 2^8
+    - Conversion en float pour garder les décimales
+
+EXEMPLE:
+    class Fixed {
+    private:
+        int                 _value;
+        static const int    _fractionalBits = 8;
+        
+    public:
+        Fixed(const int n) : _value(n << _fractionalBits) {}
+        Fixed(const float f) : _value(roundf(f * (1 << _fractionalBits))) {}
+        
+        // Conversion vers int (perd les décimales)
+        int toInt(void) const {
+            return _value >> _fractionalBits;
+            // Exemple: 10860 >> 8 = 10860 / 256 = 42
+        }
+        
+        // Conversion vers float (garde les décimales)
+        float toFloat(void) const {
+            return (float)_value / (1 << _fractionalBits);
+            // Exemple: 10860 / 256 = 42.421875
+        }
+    };
+    
+    int main() {
+        Fixed a(42.42f);
+        
+        std::cout << a.toInt() << std::endl;    // Affiche: 42
+        std::cout << a.toFloat() << std::endl;  // Affiche: 42.421875
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+4. Surcharge de l'opérateur << (insertion)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Permettre d'afficher un objet Fixed avec std::cout.
+    Rend le code plus lisible et naturel.
+
+COMMENT L'UTILISER:
+    // Fonction EXTERNE (pas membre de la classe)
+    std::ostream& operator<<(std::ostream& out, const Fixed& fixed) {
+        out << fixed.toFloat();  // Afficher comme un float
+        return out;              // IMPORTANT: retourner out
+    }
+    
+    Pourquoi externe?
+    - std::cout est de type std::ostream (pas Fixed)
+    - std::cout << fixed appelle operator<<(cout, fixed)
+    - Donc le premier paramètre est ostream, pas Fixed
+    
+    Pourquoi retourner out?
+    - Permet le chaînage: cout << a << " + " << b;
+
+EXEMPLE COMPLET:
+    #include <iostream>
+    #include <cmath>
+    
+    class Fixed {
+    private:
+        int                 _value;
+        static const int    _fractionalBits = 8;
+        
+    public:
+        Fixed(void) : _value(0) {}
+        Fixed(const int n) : _value(n << _fractionalBits) {}
+        Fixed(const float f) : _value(roundf(f * (1 << _fractionalBits))) {}
+        
+        float toFloat(void) const {
+            return (float)_value / (1 << _fractionalBits);
+        }
+    };
+    
+    // Opérateur << EXTERNE
+    std::ostream& operator<<(std::ostream& out, const Fixed& fixed) {
+        out << fixed.toFloat();
+        return out;
+    }
+    
+    int main() {
+        Fixed a(42.42f);
+        Fixed b(10);
+        
+        std::cout << a << std::endl;           // Affiche: 42.421875
+        std::cout << "a = " << a << std::endl; // Affiche: a = 42.421875
+        
+        // Chaînage:
+        std::cout << "a = " << a << ", b = " << b << std::endl;
+        // Affiche: a = 42.421875, b = 10
+        
+        return 0;
+    }
+
+CPP2 EX02 - Surcharge complète d'opérateurs
+--------------------------------------------
+NOUVELLES NOTIONS:
+- Opérateurs de comparaison (>, <, >=, <=, ==, !=)
+- Opérateurs arithmétiques (+, -, *, /)
+- Opérateurs d'incrémentation (++, --)
+- Fonctions membres statiques (min, max)
+- Différence pré-incrémentation vs post-incrémentation
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Opérateurs de comparaison (>, <, >=, <=, ==, !=)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Permettre de comparer deux objets Fixed comme des nombres normaux.
+    Utile pour les conditions if, les boucles, et les tris.
+
+COMMENT L'UTILISER:
+    bool operator>(const Fixed& other) const {
+        return this->_value > other._value;
+    }
+    
+    - Paramètre: const Fixed& (référence constante)
+    - Méthode: const (ne modifie pas l'objet)
+    - Retour: bool (true ou false)
+    - Compare les valeurs brutes (pas besoin de convertir)
+
+EXEMPLE COMPLET:
+    class Fixed {
+    private:
+        int _value;
+        static const int _fractionalBits = 8;
+        
+    public:
+        // Opérateur >
+        bool operator>(const Fixed& other) const {
+            return this->_value > other._value;
+        }
+        
+        // Opérateur <
+        bool operator<(const Fixed& other) const {
+            return this->_value < other._value;
+        }
+        
+        // Opérateur >=
+        bool operator>=(const Fixed& other) const {
+            return this->_value >= other._value;
+        }
+        
+        // Opérateur <=
+        bool operator<=(const Fixed& other) const {
+            return this->_value <= other._value;
+        }
+        
+        // Opérateur ==
+        bool operator==(const Fixed& other) const {
+            return this->_value == other._value;
+        }
+        
+        // Opérateur !=
+        bool operator!=(const Fixed& other) const {
+            return this->_value != other._value;
+        }
+    };
+    
+    // Utilisation:
+    int main() {
+        Fixed a(10.5f);
+        Fixed b(20.3f);
+        
+        if (a < b)
+            std::cout << "a est plus petit que b" << std::endl;
+        
+        if (a != b)
+            std::cout << "a est différent de b" << std::endl;
+        
+        if (a <= b)
+            std::cout << "a est inférieur ou égal à b" << std::endl;
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Opérateurs arithmétiques (+, -, *, /)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Faire des calculs mathématiques avec des objets Fixed.
+    Permet d'écrire: Fixed c = a + b; au lieu de c.add(a, b);
+
+COMMENT L'UTILISER:
+    Fixed operator+(const Fixed& other) const {
+        Fixed result;
+        result.setRawBits(this->_value + other._value);
+        return result;
+    }
+    
+    - Crée un NOUVEAU objet pour le résultat
+    - Additionne/soustrait les valeurs brutes directement
+    - Multiplication/division: plus complexe (gérer les décalages)
+
+EXEMPLE:
+    class Fixed {
+    private:
+        int _value;
+        static const int _fractionalBits = 8;
+        
+    public:
+        void setRawBits(int const raw) { _value = raw; }
+        int getRawBits(void) const { return _value; }
+        
+        // Addition
+        Fixed operator+(const Fixed& other) const {
+            Fixed result;
+            result.setRawBits(this->_value + other._value);
+            return result;
+        }
+        
+        // Soustraction
+        Fixed operator-(const Fixed& other) const {
+            Fixed result;
+            result.setRawBits(this->_value - other._value);
+            return result;
+        }
+        
+        // Multiplication
+        Fixed operator*(const Fixed& other) const {
+            Fixed result;
+            // Astuce: multiplier puis rediviser par 2^fractionalBits
+            long long tmp = (long long)this->_value * other._value;
+            result.setRawBits(tmp >> _fractionalBits);
+            return result;
+        }
+        
+        // Division
+        Fixed operator/(const Fixed& other) const {
+            Fixed result;
+            // Astuce: décaler avant de diviser
+            long long tmp = ((long long)this->_value << _fractionalBits);
+            result.setRawBits(tmp / other._value);
+            return result;
+        }
+    };
+    
+    // Utilisation:
+    int main() {
+        Fixed a(10.5f);
+        Fixed b(2.0f);
+        
+        Fixed sum = a + b;      // 12.5
+        Fixed diff = a - b;     // 8.5
+        Fixed prod = a * b;     // 21.0
+        Fixed quot = a / b;     // 5.25
+        
+        std::cout << "a + b = " << sum << std::endl;
+        std::cout << "a - b = " << diff << std::endl;
+        std::cout << "a * b = " << prod << std::endl;
+        std::cout << "a / b = " << quot << std::endl;
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Pré-incrémentation (++a) et Post-incrémentation (a++)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Incrémenter (ou décrémenter) un objet Fixed de 1.
+    Deux versions: avant (++a) et après (a++).
+
+DIFFÉRENCES CLÉS:
+
+    PRÉ-INCRÉMENTATION (++a):
+    - Incrémente PUIS retourne
+    - Retourne une référence
+    - Plus efficace (pas de copie)
+    - Syntaxe: operator++()
+    
+    POST-INCRÉMENTATION (a++):
+    - Retourne PUIS incrémente
+    - Retourne une copie
+    - Moins efficace (crée une copie)
+    - Syntaxe: operator++(int)  // int = dummy parameter
+
+COMMENT L'UTILISER:
+    class Fixed {
+    public:
+        // Pré-incrémentation: ++a
+        Fixed& operator++(void) {
+            _value++;                 // Incrémenter
+            return *this;             // Retourner référence
+        }
+        
+        // Post-incrémentation: a++
+        Fixed operator++(int) {
+            Fixed tmp(*this);         // Sauvegarder l'ancienne valeur
+            _value++;                 // Incrémenter
+            return tmp;               // Retourner l'ancienne valeur
+        }
+        
+        // Pré-décrémentation: --a
+        Fixed& operator--(void) {
+            _value--;
+            return *this;
+        }
+        
+        // Post-décrémentation: a--
+        Fixed operator--(int) {
+            Fixed tmp(*this);
+            _value--;
+            return tmp;
+        }
+    };
+
+EXEMPLE:
+    int main() {
+        Fixed a(5.0f);
+        Fixed b(5.0f);
+        
+        // Pré-incrémentation
+        std::cout << "a avant: " << a << std::endl;     // 5
+        std::cout << "++a: " << ++a << std::endl;       // 6
+        std::cout << "a après: " << a << std::endl;     // 6
+        
+        // Post-incrémentation
+        std::cout << "b avant: " << b << std::endl;     // 5
+        std::cout << "b++: " << b++ << std::endl;       // 5 (ancienne valeur)
+        std::cout << "b après: " << b << std::endl;     // 6
+        
+        // Dans une boucle:
+        for (Fixed i(0); i < Fixed(5); ++i) {  // Préférer ++i
+            std::cout << i << std::endl;
+        }
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+4. Fonctions statiques min et max
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Retourner le plus petit ou le plus grand de deux objets Fixed.
+    Besoin de 4 versions: const et non-const pour chaque.
+
+COMMENT L'UTILISER:
+    class Fixed {
+    public:
+        // min - version non-const
+        static Fixed& min(Fixed& a, Fixed& b) {
+            return (a < b) ? a : b;
+        }
+        
+        // min - version const
+        static const Fixed& min(const Fixed& a, const Fixed& b) {
+            return (a < b) ? a : b;
+        }
+        
+        // max - version non-const
+        static Fixed& max(Fixed& a, Fixed& b) {
+            return (a > b) ? a : b;
+        }
+        
+        // max - version const
+        static const Fixed& max(const Fixed& a, const Fixed& b) {
+            return (a > b) ? a : b;
+        }
+    };
+    
+    Pourquoi 2 versions?
+    - Version non-const: peut être modifié après
+    - Version const: garantit qu'on ne modifie pas
+
+EXEMPLE:
+    int main() {
+        Fixed a(10.5f);
+        Fixed b(20.3f);
+        
+        // Utiliser min
+        Fixed& smallest = Fixed::min(a, b);
+        std::cout << "Le plus petit: " << smallest << std::endl;  // 10.5
+        
+        // Utiliser max
+        Fixed& largest = Fixed::max(a, b);
+        std::cout << "Le plus grand: " << largest << std::endl;   // 20.3
+        
+        // Version const
+        const Fixed c(5.0f);
+        const Fixed d(15.0f);
+        const Fixed& minConst = Fixed::min(c, d);
+        std::cout << "Min const: " << minConst << std::endl;      // 5
+        
+        // Modifier via la référence retournée
+        Fixed::min(a, b) = Fixed(100);  // Modifie 'a' (le plus petit)
+        std::cout << "a après modification: " << a << std::endl;  // 100
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+RÉSUMÉ: Tous les opérateurs
+═══════════════════════════════════════════════════════════════════════════════
+
+    COMPARAISON (retourne bool):
+        a > b, a < b, a >= b, a <= b, a == b, a != b
+    
+    ARITHMÉTIQUE (retourne nouveau Fixed):
+        a + b, a - b, a * b, a / b
+    
+    INCRÉMENTATION/DÉCRÉMENTATION:
+        ++a (pré), a++ (post), --a (pré), a-- (post)
+    
+    STATIQUES:
+        Fixed::min(a, b), Fixed::max(a, b)
+    
+    AFFICHAGE:
+        std::cout << a
+
+CPP2 EX03 - Attributs const
+----------------------------
+NOUVELLES NOTIONS:
+- Attributs const dans une classe
+- Initialisation obligatoire dans la liste d'initialisation
+- Différence avec les références
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Attributs const
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer des attributs qui ne peuvent JAMAIS être modifiés après la
+    construction de l'objet. Utile pour des coordonnées fixes, des IDs,
+    ou toute donnée qui ne doit jamais changer.
+
+COMMENT L'UTILISER:
+    class Point {
+    private:
+        Fixed const _x;  // Coordonnée X constante
+        Fixed const _y;  // Coordonnée Y constante
+        
+    public:
+        // OBLIGATOIRE: initialiser dans la liste d'initialisation
+        Point(float x, float y) : _x(x), _y(y) {}
+        
+        // Getters (pas de setters car const)
+        Fixed getX(void) const { return _x; }
+        Fixed getY(void) const { return _y; }
+    };
+    
+    RÈGLES:
+    - DOIT être initialisé dans la liste d'initialisation
+    - NE PEUT PAS être modifié après construction
+    - NE PEUT PAS avoir de setter
+    - Similaire aux références (aussi obligatoires dans la liste)
+
+EXEMPLE:
+    class Point {
+    private:
+        Fixed const _x;
+        Fixed const _y;
+        
+    public:
+        // Constructeur: OBLIGATOIRE liste d'initialisation
+        Point(void) : _x(0), _y(0) {}
+        
+        Point(float x, float y) : _x(x), _y(y) {}
+        
+        // Tentative IMPOSSIBLE dans le corps du constructeur:
+        // Point(float x, float y) {
+        //     _x = x;  // ❌ ERREUR: _x est const
+        //     _y = y;  // ❌ ERREUR: _y est const
+        // }
+        
+        Fixed getX(void) const { return _x; }
+        Fixed getY(void) const { return _y; }
+        
+        void display(void) const {
+            std::cout << "(" << _x << ", " << _y << ")" << std::endl;
+        }
+    };
+    
+    int main() {
+        Point p1(3.5f, 7.2f);
+        p1.display();  // Affiche: (3.5, 7.2)
+        
+        // p1._x = 10;  // ❌ ERREUR: _x est privé ET const
+        
+        std::cout << "X: " << p1.getX() << std::endl;  // OK
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Opérateur d'assignation avec attributs const
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Comprendre pourquoi l'opérateur d'assignation ne peut PAS modifier
+    les attributs const, et comment gérer cette situation.
+
+PROBLÈME:
+    Si une classe a des attributs const, on ne peut pas vraiment les
+    "réassigner" car ils sont constants. L'opérateur = devient donc
+    limité ou même inutile.
+
+COMMENT L'UTILISER:
+    class Point {
+    private:
+        Fixed const _x;
+        Fixed const _y;
+        
+    public:
+        Point(float x, float y) : _x(x), _y(y) {}
+        
+        // Opérateur d'assignation (forme canonique obligatoire)
+        Point& operator=(const Point& other) {
+            // IMPOSSIBLE de faire:
+            // _x = other._x;  // ❌ ERREUR: _x est const
+            // _y = other._y;  // ❌ ERREUR: _y est const
+            
+            // Solution: ne rien faire ou afficher un warning
+            (void)other;  // Éviter le warning "unused parameter"
+            return *this;
+        }
+    };
+
+EXEMPLE COMPLET:
+    class Point {
+    private:
+        Fixed const _x;
+        Fixed const _y;
+        
+    public:
+        // Constructeur par défaut
+        Point(void) : _x(0), _y(0) {}
+        
+        // Constructeur paramétré
+        Point(float x, float y) : _x(x), _y(y) {}
+        
+        // Constructeur par copie (fonctionne car initialisation)
+        Point(const Point& other) : _x(other._x), _y(other._y) {}
+        
+        // Opérateur d'assignation (ne peut pas modifier const)
+        Point& operator=(const Point& other) {
+            // On ne peut rien faire avec _x et _y car const
+            // Juste retourner *this pour respecter la forme canonique
+            (void)other;
+            return *this;
+        }
+        
+        ~Point(void) {}
+        
+        void display(void) const {
+            std::cout << "(" << _x << ", " << _y << ")" << std::endl;
+        }
+    };
+    
+    int main() {
+        Point p1(3.0f, 4.0f);
+        Point p2(10.0f, 20.0f);
+        
+        p1.display();  // Affiche: (3, 4)
+        p2.display();  // Affiche: (10, 20)
+        
+        // Constructeur par copie: OK
+        Point p3 = p1;     // Crée un nouveau point avec _x=3, _y=4
+        p3.display();      // Affiche: (3, 4)
+        
+        // Opérateur d'assignation: ne fait rien
+        p1 = p2;           // Ne change rien car _x et _y sont const
+        p1.display();      // Affiche toujours: (3, 4)
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+3. const vs références: Similitudes et différences
+═══════════════════════════════════════════════════════════════════════════════
+
+SIMILITUDES:
+    - Tous deux DOIVENT être initialisés dans la liste d'initialisation
+    - Tous deux ne peuvent PAS être réassignés
+    - Tous deux rendent l'opérateur = problématique
+
+DIFFÉRENCES:
+
+    ATTRIBUT CONST:
+    - Stocke une VALEUR constante
+    - La valeur est copiée dans l'objet
+    - Existe indépendamment d'autres objets
+    - Exemple: const int _id;
+    
+    RÉFÉRENCE:
+    - Stocke un ALIAS vers un objet externe
+    - Dépend de l'existence de l'objet référencé
+    - L'objet référencé DOIT exister pendant toute la vie
+    - Exemple: Weapon& _weapon;
+
+EXEMPLE COMPARATIF:
+    class Example {
+    private:
+        int const   _constValue;   // Valeur constante (copie)
+        int&        _reference;    // Référence (alias)
+        
+    public:
+        // Les deux DOIVENT être dans la liste d'initialisation
+        Example(int value, int& ref) 
+            : _constValue(value), _reference(ref) {}
+        
+        void display(void) const {
+            std::cout << "const: " << _constValue << std::endl;
+            std::cout << "ref: " << _reference << std::endl;
+        }
+        
+        void modifyRef(int newValue) {
+            // _constValue = newValue;  // ❌ ERREUR: const
+            _reference = newValue;      // ✓ OK: modifie l'objet référencé
+        }
+    };
+    
+    int main() {
+        int external = 100;
+        
+        Example ex(42, external);
+        ex.display();
+        // Affiche:
+        // const: 42
+        // ref: 100
+        
+        ex.modifyRef(200);
+        ex.display();
+        // Affiche:
+        // const: 42 (inchangé)
+        // ref: 200
+        
+        std::cout << "external: " << external << std::endl;
+        // Affiche: external: 200 (modifié via la référence)
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+RÉSUMÉ: Quand utiliser const
+═══════════════════════════════════════════════════════════════════════════════
+
+    Utiliser des attributs CONST quand:
+    ✓ La valeur ne doit JAMAIS changer (ID, coordonnées fixes)
+    ✓ L'objet a une "identité" immuable
+    ✓ Vous voulez garantir l'immutabilité
+    
+    NE PAS utiliser const si:
+    ✗ Vous avez besoin d'un opérateur = fonctionnel
+    ✗ La valeur peut changer pendant la vie de l'objet
+    ✗ Vous voulez pouvoir copier/modifier l'objet
+
+
+═══════════════════════════════════════════════════════════════════════════════
+═══════════════════════════════════════════════════════════════════════════════
+                                    CPP3
+                                  HÉRITAGE
+═══════════════════════════════════════════════════════════════════════════════
+═══════════════════════════════════════════════════════════════════════════════
+
+CPP3 EX00 - Classe de base (ClapTrap)
+--------------------------------------
+NOUVELLES NOTIONS:
+- Classe de base pour l'héritage
+- Attributs protected (préparation pour l'héritage)
+- Encapsulation des données
+- Messages de debug pour constructeurs/destructeurs
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Préparation d'une classe de base
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer une classe qui sera la base pour d'autres classes (classes dérivées).
+    Cette classe définit les attributs et comportements communs que les classes
+    filles vont hériter et potentiellement modifier.
+
+COMMENT L'UTILISER:
+    class ClasseBase {
+    protected:  // Au lieu de private, pour permettre l'héritage
+        // Attributs accessibles par les classes filles
+        std::string _attribut;
+        int _valeur;
+        
+    public:
+        // Constructeurs
+        ClasseBase();
+        ClasseBase(const std::string& param);
+        
+        // Méthodes que les classes filles peuvent utiliser ou override
+        void methode();
+        virtual void methodeVirtuelle();  // Pour être override
+    };
+
+EXEMPLE (ClapTrap):
+    class ClapTrap {
+    protected:  // Protected pour permettre l'héritage
+        std::string name;
+        unsigned int HP;
+        unsigned int EP;
+        unsigned int DMG;
+        
+    public:
+        ClapTrap();
+        ClapTrap(const std::string& name);
+        ~ClapTrap();
+        
+        void attack(const std::string& target);
+        void takeDamage(unsigned int amount);
+        void beRepaired(unsigned int amount);
+    };
+
+═══════════════════════════════════════════════════════════════════════════════
+2. protected: vs private: vs public:
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Contrôler qui peut accéder aux membres de la classe.
+    
+    private:   Accessible uniquement dans la classe elle-même
+    protected: Accessible dans la classe ET les classes dérivées
+    public:    Accessible partout
+
+QUAND UTILISER CHAQUE NIVEAU:
+    ┌──────────────┬─────────────┬──────────────┬──────────────┐
+    │              │  La classe  │  Classes     │  Extérieur   │
+    │              │  elle-même  │  dérivées    │              │
+    ├──────────────┼─────────────┼──────────────┼──────────────┤
+    │ private:     │     ✓       │      ✗       │      ✗       │
+    │ protected:   │     ✓       │      ✓       │      ✗       │
+    │ public:      │     ✓       │      ✓       │      ✓       │
+    └──────────────┴─────────────┴──────────────┴──────────────┘
+
+EXEMPLE:
+    class Base {
+    private:
+        int _prive;        // Uniquement dans Base
+    protected:
+        int _protege;      // Dans Base et classes dérivées
+    public:
+        int _publique;     // Accessible partout
+    };
+    
+    class Derivee : public Base {
+    public:
+        void test() {
+            // _prive = 1;     // ❌ ERREUR : private dans Base
+            _protege = 2;      // ✓ OK : protected donc accessible
+            _publique = 3;     // ✓ OK : public donc accessible
+        }
+    };
+    
+    int main() {
+        Derivee obj;
+        // obj._prive = 1;     // ❌ ERREUR : private
+        // obj._protege = 2;   // ❌ ERREUR : protected
+        obj._publique = 3;     // ✓ OK : public
+    }
+
+CPP3 EX01 - Héritage simple (ScavTrap)
+---------------------------------------
+NOUVELLES NOTIONS:
+- Syntaxe de l'héritage (: public)
+- Chaînage de constructeurs/destructeurs
+- Override de méthodes
+- Appel de constructeur de la classe de base
+- Initialisation des attributs hérités
+
+═══════════════════════════════════════════════════════════════════════════════
+1. L'héritage simple
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer une nouvelle classe (classe dérivée) qui hérite des attributs et
+    méthodes d'une classe existante (classe de base), tout en ajoutant ses
+    propres fonctionnalités ou en modifiant celles existantes.
+
+SYNTAXE:
+    class ClasseDerivee : public ClasseBase {
+    public:
+        // Nouveaux membres
+        // Override de méthodes
+    };
+    
+    Types d'héritage:
+    - public:    (le plus courant) Les membres public restent public
+    - protected: Les membres public deviennent protected
+    - private:   Les membres public deviennent private
+
+EXEMPLE (ScavTrap hérite de ClapTrap):
+    // Fichier ScavTrap.hpp
+    #include "ClapTrap.hpp"
+    
+    class ScavTrap : public ClapTrap {
+    public:
+        ScavTrap();
+        ScavTrap(const std::string& name);
+        ~ScavTrap();
+        
+        void attack(const std::string& target);  // Override
+        void guardGate();  // Nouvelle méthode
+    };
+    
+    // ScavTrap hérite de:
+    // - name, HP, EP, DMG (attributs)
+    // - takeDamage(), beRepaired() (méthodes)
+    // - Mais override attack() avec sa propre version
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Chaînage de constructeurs/destructeurs
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Lors de la création/destruction d'un objet dérivé, les constructeurs et
+    destructeurs de la chaîne d'héritage sont appelés automatiquement dans
+    un ordre spécifique.
+
+ORDRE D'EXÉCUTION:
+    Construction: Base → Dérivée (du parent vers l'enfant)
+    Destruction:  Dérivée → Base (inverse, de l'enfant vers le parent)
+    
+    Exemple avec ScavTrap:
+    Construction d'un ScavTrap:
+        1. Constructeur de ClapTrap
+        2. Constructeur de ScavTrap
+    
+    Destruction d'un ScavTrap:
+        1. Destructeur de ScavTrap
+        2. Destructeur de ClapTrap
+
+SYNTAXE (Appel du constructeur de base):
+    ClasseDerivee::ClasseDerivee(params) : ClasseBase(params_base) {
+        // Initialisation spécifique à la classe dérivée
+    }
+
+EXEMPLE:
+    // Dans ScavTrap.cpp
+    ScavTrap::ScavTrap(const std::string& name) : ClapTrap(name) {
+        // ClapTrap(name) est appelé EN PREMIER
+        // Puis on initialise les valeurs spécifiques à ScavTrap
+        this->HP = 100;   // Override la valeur de ClapTrap (10)
+        this->EP = 50;    // Override la valeur de ClapTrap (10)
+        this->DMG = 20;   // Override la valeur de ClapTrap (0)
+        std::cout << "ScavTrap " << this->name << " constructor" << std::endl;
+    }
+    
+    ScavTrap::~ScavTrap() {
+        std::cout << "ScavTrap " << this->name << " destructor" << std::endl;
+        // Puis le destructeur de ClapTrap sera appelé automatiquement
+    }
+    
+    // Utilisation:
+    {
+        ScavTrap scav("Guardian");
+        // Affiche:
+        // ClapTrap Guardian constructor called
+        // ScavTrap Guardian constructor called
+    }  // Fin du scope
+    // Affiche:
+    // ScavTrap Guardian destructor called
+    // ClapTrap Guardian destructor called
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Override de méthodes
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Remplacer le comportement d'une méthode héritée par une nouvelle
+    implémentation dans la classe dérivée.
+
+COMMENT L'UTILISER:
+    Dans la classe dérivée, on redéfinit la méthode avec la même signature:
+    
+    class Base {
+    public:
+        void methode();
+    };
+    
+    class Derivee : public Base {
+    public:
+        void methode();  // Override de Base::methode()
+    };
+
+EXEMPLE (Override de attack()):
+    // Dans ClapTrap.cpp
+    void ClapTrap::attack(const std::string& target) {
+        std::cout << "ClapTrap " << name << " attacks " << target
+                  << ", causing " << DMG << " points of damage!" << std::endl;
+    }
+    
+    // Dans ScavTrap.cpp (override)
+    void ScavTrap::attack(const std::string& target) {
+        std::cout << "ScavTrap " << name << " attacks " << target
+                  << ", causing " << DMG << " points of damage!" << std::endl;
+    }
+    
+    // Utilisation:
+    ClapTrap clap("Bob");
+    ScavTrap scav("Alice");
+    
+    clap.attack("Enemy");  // Appelle ClapTrap::attack()
+    scav.attack("Enemy");  // Appelle ScavTrap::attack() (override)
+
+CPP3 EX02 - Deuxième classe dérivée (FragTrap)
+-----------------------------------------------
+NOUVELLES NOTIONS:
+- Multiple classes dérivées d'une même base
+- Chaque classe dérivée a ses propres caractéristiques
+- Polymorphisme de base (différents objets, même interface)
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Plusieurs classes dérivées de la même base
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Une classe de base peut avoir plusieurs classes dérivées, chacune avec
+    ses propres spécificités. C'est le principe de spécialisation.
+
+STRUCTURE:
+            ClapTrap (Base)
+               /    \
+              /      \
+         ScavTrap  FragTrap
+         
+    ScavTrap et FragTrap héritent tous deux de ClapTrap mais ont:
+    - Des valeurs d'attributs différentes
+    - Des méthodes spéciales différentes
+    - Des messages de construction différents
+
+EXEMPLE:
+    // FragTrap hérite aussi de ClapTrap
+    class FragTrap : public ClapTrap {
+    public:
+        FragTrap();
+        FragTrap(const std::string& name);
+        ~FragTrap();
+        
+        void highFivesGuys(void);  // Méthode unique à FragTrap
+    };
+    
+    // Constructeur
+    FragTrap::FragTrap(const std::string& name) : ClapTrap(name) {
+        this->HP = 100;   // Différent de ScavTrap
+        this->EP = 100;   // Différent de ScavTrap (qui a 50)
+        this->DMG = 30;   // Différent de ScavTrap (qui a 20)
+        std::cout << "FragTrap " << this->name << " constructor" << std::endl;
+    }
+    
+    // Comparaison des trois classes:
+    // ClapTrap: HP=10,  EP=10,  DMG=0
+    // ScavTrap: HP=100, EP=50,  DMG=20  + guardGate()
+    // FragTrap: HP=100, EP=100, DMG=30  + highFivesGuys()
+
+CPP3 EX03 - Héritage multiple et problème du diamant (DiamondTrap)
+-------------------------------------------------------------------
+NOUVELLES NOTIONS:
+- Héritage multiple (hériter de plusieurs classes)
+- Problème du diamant
+- Héritage virtuel (virtual public)
+- Name shadowing
+- Using directive
+- Résolution d'ambiguïté
+
+═══════════════════════════════════════════════════════════════════════════════
+1. L'héritage multiple
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Permettre à une classe d'hériter de plusieurs classes parentes en même
+    temps, combinant ainsi les fonctionnalités de plusieurs classes.
+
+SYNTAXE:
+    class ClasseDerivee : public Base1, public Base2 {
+        // Hérite de Base1 ET Base2
+    };
+
+EXEMPLE (DiamondTrap):
+    class DiamondTrap : public ScavTrap, public FragTrap {
+    private:
+        std::string name;  // Propre à DiamondTrap
+        
+    public:
+        DiamondTrap();
+        DiamondTrap(const std::string& name);
+        ~DiamondTrap();
+        
+        void whoAmI();
+    };
+    
+    // DiamondTrap hérite de:
+    // - ScavTrap (qui hérite de ClapTrap)
+    // - FragTrap (qui hérite aussi de ClapTrap)
+    // ⚠️ PROBLÈME: Deux copies de ClapTrap !
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Le problème du diamant
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Comprendre et résoudre le problème qui survient quand une classe hérite
+    de deux classes qui ont elles-mêmes une classe de base commune.
+
+LE PROBLÈME:
+    Sans héritage virtuel:
+    
+            ClapTrap
+              /    \
+             /      \
+        ScavTrap  FragTrap
+             \      /
+              \    /
+           DiamondTrap
+    
+    DiamondTrap aurait DEUX copies de ClapTrap !
+    → Deux "name", deux "HP", deux "EP", deux "DMG"
+    → Ambiguïté: lequel utiliser ?
+
+LA SOLUTION: Héritage virtuel
+    
+    class ScavTrap : virtual public ClapTrap { ... };
+    class FragTrap : virtual public ClapTrap { ... };
+    
+    Avec "virtual public", il n'y a plus qu'UNE SEULE copie de ClapTrap
+    partagée entre ScavTrap et FragTrap.
+
+EXEMPLE:
+    // ScavTrap.hpp
+    class ScavTrap : virtual public ClapTrap {  // virtual public !
+        // ...
+    };
+    
+    // FragTrap.hpp
+    class FragTrap : virtual public ClapTrap {  // virtual public !
+        // ...
+    };
+    
+    // DiamondTrap.hpp
+    class DiamondTrap : public ScavTrap, public FragTrap {
+        // Maintenant il n'y a qu'UNE SEULE copie de ClapTrap
+        // ...
+    };
+    
+    // Dans le constructeur de DiamondTrap:
+    DiamondTrap::DiamondTrap(const std::string& name) 
+        : ClapTrap(name + "_clap_name")  // Appel DIRECT à ClapTrap
+    {
+        // Avec l'héritage virtuel, c'est DiamondTrap qui doit
+        // appeler directement le constructeur de ClapTrap
+        this->HP = 100;   // De FragTrap
+        this->EP = 50;    // De ScavTrap
+        this->DMG = 30;   // De FragTrap
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Name shadowing (masquage de nom)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Permettre à une classe dérivée d'avoir un attribut avec le même nom qu'un
+    attribut de la classe de base, tout en gardant l'accès aux deux.
+
+COMMENT ÇA MARCHE:
+    Si DiamondTrap et ClapTrap ont tous deux un attribut "name":
+    - this->name fait référence à DiamondTrap::name
+    - ClapTrap::name fait référence à l'attribut de ClapTrap
+    
+    L'attribut de la classe dérivée "masque" (shadow) celui de la base.
+
+EXEMPLE:
+    class ClapTrap {
+    protected:
+        std::string name;  // ClapTrap::name
+    };
+    
+    class DiamondTrap : public ScavTrap, public FragTrap {
+    private:
+        std::string name;  // DiamondTrap::name (masque ClapTrap::name)
+        
+    public:
+        void whoAmI() {
+            // Accès aux DEUX noms
+            std::cout << "DiamondTrap name: " << this->name << std::endl;
+            std::cout << "ClapTrap name: " << ClapTrap::name << std::endl;
+        }
+    };
+    
+    // Utilisation:
+    DiamondTrap d("Hero");
+    // DiamondTrap::name = "Hero"
+    // ClapTrap::name = "Hero_clap_name"
+    d.whoAmI();
+    // Affiche:
+    // DiamondTrap name: Hero
+    // ClapTrap name: Hero_clap_name
+
+═══════════════════════════════════════════════════════════════════════════════
+4. Using directive pour résoudre les ambiguïtés
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Quand plusieurs classes parentes ont une méthode avec le même nom,
+    using permet de spécifier laquelle utiliser dans la classe dérivée.
+
+PROBLÈME:
+    DiamondTrap hérite de ScavTrap ET FragTrap.
+    Si on appelle attack(), laquelle utiliser ?
+    - ScavTrap::attack() ?
+    - FragTrap::attack() ?
+    - ClapTrap::attack() ?
+
+SOLUTION:
+    class DiamondTrap : public ScavTrap, public FragTrap {
+    public:
+        using ScavTrap::attack;  // Utilise la version de ScavTrap
+        // OU
+        // using FragTrap::attack;  // Utilise la version de FragTrap
+    };
+
+EXEMPLE:
+    // DiamondTrap.hpp
+    class DiamondTrap : public ScavTrap, public FragTrap {
+    public:
+        using ScavTrap::attack;  // On choisit ScavTrap::attack()
+        void whoAmI();
+    };
+    
+    // Utilisation:
+    DiamondTrap d("Fighter");
+    d.attack("Enemy");      // Appelle ScavTrap::attack()
+    d.guardGate();          // De ScavTrap
+    d.highFivesGuys();      // De FragTrap
+    d.whoAmI();             // De DiamondTrap
+
+═══════════════════════════════════════════════════════════════════════════════
+5. Ordre de construction avec l'héritage virtuel
+═══════════════════════════════════════════════════════════════════════════════
+
+RÈGLE IMPORTANTE:
+    Avec l'héritage virtuel, la classe LA PLUS DÉRIVÉE (DiamondTrap) est
+    responsable d'appeler le constructeur de la classe virtuelle de base
+    (ClapTrap).
+
+ORDRE DE CONSTRUCTION pour DiamondTrap:
+    1. ClapTrap (classe virtuelle de base)
+    2. ScavTrap (premier parent)
+    3. FragTrap (deuxième parent)
+    4. DiamondTrap (classe finale)
+
+ORDRE DE DESTRUCTION (inverse):
+    1. DiamondTrap
+    2. FragTrap
+    3. ScavTrap
+    4. ClapTrap
+
+EXEMPLE:
+    DiamondTrap::DiamondTrap(const std::string& name) 
+        : ClapTrap(name + "_clap_name")  // Appel EXPLICITE obligatoire
+    {
+        this->name = name;
+        this->HP = 100;   // FragTrap
+        this->EP = 50;    // ScavTrap
+        this->DMG = 30;   // FragTrap
+    }
+    
+    // À la construction d'un DiamondTrap:
+    DiamondTrap d("Hero");
+    // Affiche:
+    // ClapTrap Hero_clap_name constructor called
+    // ScavTrap default constructor called
+    // FragTrap default constructor called
+    // DiamondTrap Hero constructor called
+
+
+RÉSUMÉ: Héritage en C++
+═══════════════════════════════════════════════════════════════════════════════
+
+    NIVEAUX D'ACCÈS:
+    ┌──────────────┬─────────────┬──────────────┬──────────────┐
+    │              │  La classe  │  Classes     │  Extérieur   │
+    ├──────────────┼─────────────┼──────────────┼──────────────┤
+    │ private      │     ✓       │      ✗       │      ✗       │
+    │ protected    │     ✓       │      ✓       │      ✗       │
+    │ public       │     ✓       │      ✓       │      ✓       │
+    └──────────────┴─────────────┴──────────────┴──────────────┘
+    
+    TYPES D'HÉRITAGE:
+    - public:    Les membres public restent public (LE PLUS COURANT)
+    - protected: Les membres public deviennent protected
+    - private:   Les membres public deviennent private
+    
+    ORDRE CONSTRUCTION/DESTRUCTION:
+    Construction: Base → Dérivée (du parent vers l'enfant)
+    Destruction:  Dérivée → Base (de l'enfant vers le parent)
+    
+    HÉRITAGE MULTIPLE:
+    class Derivee : public Base1, public Base2 { };
+    
+    PROBLÈME DU DIAMANT:
+    Solution: virtual public pour éviter les copies multiples
+    class ScavTrap : virtual public ClapTrap { };
+    class FragTrap : virtual public ClapTrap { };
+    
+    RÉSOLUTION D'AMBIGUÏTÉ:
+    - using BaseClass::methode;  (choisir une version)
+    - BaseClass::methode();       (appel explicite)
+    - BaseClass::attribut         (accès explicite)
+
+
+RÉSUMÉ:
+CPP0: Classes, encapsulation, membres statiques
+- Namespace, iostream
+- Classes (private/public)
+- Constructeur/destructeur
+- Méthodes const
+- Membres et méthodes statiques
+
+CPP1: Gestion mémoire, références, pointeurs
+- new/delete, new[]/delete[]
+- Stack vs Heap
+- Références (&)
+- Références vs pointeurs
+- Références comme membres
+- Pointeurs sur fonctions membres
+- Fichiers (ifstream/ofstream)
+
+CPP2: Surcharge d'opérateurs, forme canonique
+- Forme canonique orthodoxe (4 éléments)
+- Constructeur par copie
+- Opérateur d'assignation
+- Constructeurs paramétrés
+- Surcharge d'opérateurs (<, +, ++, <<, etc.)
+- Pré/post incrémentation
+- Fonctions statiques avancées
+- Attributs const
+
+CPP3: Héritage
+- Héritage simple (public, protected, private)
+- Attributs protected
+- Chaînage de constructeurs/destructeurs
+- Override de méthodes
+- Héritage virtuel (virtual public)
+- Héritage multiple
+- Problème du diamant
+- Name shadowing
+- Using directive
+
+CONSEILS GÉNÉRAUX
+
+1. Toujours utiliser la forme canonique orthodoxe pour vos classes
+   (constructeur par défaut, par copie, opérateur =, destructeur)
+
+2. delete ce qui a été alloué par new, delete[] pour new[]
+
+3. Références (&) pour les paramètres de fonctions (évite les copies)
+
+4. const partout où c'est possible (méthodes, paramètres, retours)
+
+5. Liste d'initialisation pour: références, const, et optimisation
+
+6. Préférer pré-incrémentation (++i) à post-incrémentation (i++)
+
+7. Toujours vérifier this != &other dans l'opérateur d'assignation
+
+8. Retourner *this dans l'opérateur = pour permettre le chaînage
+
+9. Utiliser protected pour les attributs destinés à être hérités
+
+10. Héritage virtuel pour résoudre le problème du diamant

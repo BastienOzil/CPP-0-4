@@ -1,26 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   FragTrap.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/02 11:29:39 by bozil             #+#    #+#             */
-/*   Updated: 2026/02/04 12:09:58 by bozil            ###   ########.fr       */
+/*   Created: 2026/02/04 12:00:00 by bozil             #+#    #+#             */
+/*   Updated: 2026/02/04 12:27:43 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef FRAGTRAP_HPP
+#define FRAGTRAP_HPP
+
 #include "ClapTrap.hpp"
 
-int main()
+class FragTrap : virtual public ClapTrap
 {
-	ClapTrap clap("CL4P-TP");
-	
-	clap.attack("Enemy");
-	clap.takeDamage(5);
-	clap.beRepaired(3);
-	clap.takeDamage(15);
-	clap.attack("Target");
-	
-	return (0);
-}
+public:
+	FragTrap();
+	FragTrap(const std::string &name);
+	FragTrap(const FragTrap &other);
+	~FragTrap();
+
+	FragTrap &operator=(const FragTrap &other);
+
+	void highFivesGuys(void);
+};
+
+#endif

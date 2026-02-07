@@ -5,22 +5,22 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/02 11:29:39 by bozil             #+#    #+#             */
-/*   Updated: 2026/02/04 12:09:58 by bozil            ###   ########.fr       */
+/*   Created: 2026/02/04 11:52:00 by bozil             #+#    #+#             */
+/*   Updated: 2026/02/04 12:19:27 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ClapTrap.hpp"
+#include "ScavTrap.hpp"
 
 int main()
 {
-	ClapTrap clap("CL4P-TP");
+	ScavTrap scav("Guardian");
 	
-	clap.attack("Enemy");
-	clap.takeDamage(5);
-	clap.beRepaired(3);
-	clap.takeDamage(15);
-	clap.attack("Target");
+	scav.attack("Enemy");
+	scav.takeDamage(30);
+	scav.beRepaired(20);
+	scav.guardGate();
 	
 	return (0);
 }
