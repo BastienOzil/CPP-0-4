@@ -2761,13 +2761,6 @@ RÉSUMÉ: Quand utiliser const
     ✗ Vous voulez pouvoir copier/modifier l'objet
 
 
-═══════════════════════════════════════════════════════════════════════════════
-═══════════════════════════════════════════════════════════════════════════════
-                                    CPP3
-                                  HÉRITAGE
-═══════════════════════════════════════════════════════════════════════════════
-═══════════════════════════════════════════════════════════════════════════════
-
 CPP3 EX00 - Classe de base (ClapTrap)
 --------------------------------------
 NOUVELLES NOTIONS:
@@ -3354,6 +3347,16 @@ CPP3: Héritage
 - Name shadowing
 - Using directive
 
+CPP4: Polymorphisme, classes abstraites, interfaces
+- Polymorphisme de sous-type
+- Fonctions virtuelles (virtual)
+- Fonctions virtuelles pures (= 0)
+- Classes abstraites
+- Destructeur virtuel
+- Deep copy vs Shallow copy
+- Gestion mémoire avec héritage
+- Comportement polymorphique
+
 CONSEILS GÉNÉRAUX
 
 1. Toujours utiliser la forme canonique orthodoxe pour vos classes
@@ -3376,3 +3379,1344 @@ CONSEILS GÉNÉRAUX
 9. Utiliser protected pour les attributs destinés à être hérités
 
 10. Héritage virtuel pour résoudre le problème du diamant
+
+
+═══════════════════════════════════════════════════════════════════════════════
+CPP4 - POLYMORPHISME ET CLASSES ABSTRAITES
+═══════════════════════════════════════════════════════════════════════════════
+
+NOUVELLES NOTIONS:
+- Polymorphisme de sous-type (subtype polymorphism)
+- Fonctions virtuelles (virtual)
+- Fonctions virtuelles pures (= 0)
+- Classes abstraites
+- Destructeur virtuel (CRITIQUE!)
+- Deep copy vs Shallow copy
+- Comportement polymorphique
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Polymorphisme et fonctions virtuelles (virtual)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Permettre à une classe dérivée de redéfinir le comportement d'une méthode
+    de la classe de base, ET que ce comportement soit utilisé même quand on
+    manipule l'objet via un pointeur/référence vers la classe de base.
+
+PROBLÈME SANS virtual:
+    class Animal {
+        void makeSound() { cout << "Generic sound"; }
+    };
+    
+    class Dog : public Animal {
+        void makeSound() { cout << "Woaf!"; }  // Override
+    };
+    
+    Animal* animal = new Dog();
+    animal->makeSound();  // Affiche "Generic sound" ❌
+    // On voulait "Woaf!" mais on obtient le comportement d'Animal!
+
+SOLUTION AVEC virtual:
+    class Animal {
+        virtual void makeSound() { cout << "Generic sound"; }
+        //^^^^^^ MOT-CLÉ MAGIQUE
+    };
+    
+    class Dog : public Animal {
+        void makeSound() { cout << "Woaf!"; }  // Override automatique
+    };
+    
+    Animal* animal = new Dog();
+    animal->makeSound();  // Affiche "Woaf!" ✅
+    // Le bon comportement est appelé!
+
+COMMENT L'UTILISER:
+    1. Dans la classe de BASE, déclarer la fonction comme virtual:
+       virtual TypeRetour nomFonction(params) const;
+    
+    2. Dans la classe DÉRIVÉE, redéfinir la fonction (même signature):
+       TypeRetour nomFonction(params) const;  // virtual implicite
+    
+    3. Le mot-clé virtual dans la dérivée est optionnel mais recommandé
+       pour la lisibilité.
+
+QUAND L'UTILISER:
+    - Dès que vous voulez permettre aux classes dérivées de changer
+      le comportement d'une méthode
+    - Pour toute méthode qui définit un "comportement spécifique"
+    - TOUJOURS pour le destructeur quand il y a de l'héritage!
+
+EXEMPLE COMPLET:
+    class Animal {
+    public:
+        virtual void makeSound() const {
+            cout << "* Generic animal sound *" << endl;
+        }
+        
+        virtual ~Animal() {  // Destructeur virtuel!
+            cout << "Animal destructor" << endl;
+        }
+    };
+    
+    class Dog : public Animal {
+    public:
+        virtual void makeSound() const {  // virtual optionnel ici
+            cout << "Woaf! Woaf!" << endl;
+        }
+        
+        ~Dog() {
+            cout << "Dog destructor" << endl;
+        }
+    };
+    
+    class Cat : public Animal {
+    public:
+        void makeSound() const {  // virtual implicite
+            cout << "Miaou! Miaou!" << endl;
+        }
+        
+        ~Cat() {
+            cout << "Cat destructor" << endl;
+        }
+    };
+    
+    // Utilisation polymorphique
+    int main() {
+        Animal* animals[3];
+        animals[0] = new Animal();
+        animals[1] = new Dog();
+        animals[2] = new Cat();
+        
+        // Polymorphisme en action!
+        for (int i = 0; i < 3; i++) {
+            animals[i]->makeSound();  // Appelle la bonne version!
+        }
+        
+        // Affiche:
+        // * Generic animal sound *
+        // Woaf! Woaf!
+        // Miaou! Miaou!
+        
+        // Nettoyage
+        for (int i = 0; i < 3; i++) {
+            delete animals[i];  // Appelle le bon destructeur grâce à virtual!
+        }
+        
+        return 0;
+    }
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Destructeur virtuel (CRUCIAL!)
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Garantir que le destructeur de la classe dérivée sera appelé
+    lorsqu'on supprime un objet via un pointeur vers la classe de base.
+
+PROBLÈME SANS virtual:
+    class Base {
+    public:
+        ~Base() { cout << "Base destructor"; }  // PAS virtual ❌
+    };
+    
+    class Derived : public Base {
+    private:
+        int* data;
+    public:
+        Derived() { data = new int[100]; }
+        ~Derived() { 
+            delete[] data;  // Libération mémoire
+            cout << "Derived destructor";
+        }
+    };
+    
+    Base* obj = new Derived();
+    delete obj;  // ❌ FUITE MÉMOIRE!
+    // Seul ~Base() est appelé, ~Derived() n'est JAMAIS appelé!
+    // Les 100 int ne sont jamais libérés!
+
+SOLUTION AVEC virtual:
+    class Base {
+    public:
+        virtual ~Base() { cout << "Base destructor"; }
+        //^^^^^^ TOUJOURS virtual dans une classe de base!
+    };
+    
+    class Derived : public Base {
+    private:
+        int* data;
+    public:
+        Derived() { data = new int[100]; }
+        ~Derived() { 
+            delete[] data;
+            cout << "Derived destructor";
+        }
+    };
+    
+    Base* obj = new Derived();
+    delete obj;  // ✅ Pas de fuite!
+    // Ordre d'appel: ~Derived() puis ~Base()
+    // Tout est correctement libéré!
+
+RÈGLE D'OR:
+    Si une classe a AU MOINS une fonction virtual,
+    son destructeur DOIT être virtual!
+    
+    Si une classe est destinée à être héritée,
+    son destructeur DOIT être virtual!
+
+EXEMPLE:
+    class Animal {
+    public:
+        virtual void makeSound() const = 0;
+        virtual ~Animal() {}  // ✅ Virtual même si vide!
+    };
+    
+    class Dog : public Animal {
+    private:
+        Brain* brain;  // Pointeur vers objet alloué
+    public:
+        Dog() { brain = new Brain(); }
+        
+        ~Dog() {
+            delete brain;  // ✅ Sera appelé grâce au virtual!
+            cout << "Dog destructor" << endl;
+        }
+        
+        void makeSound() const {
+            cout << "Woaf!" << endl;
+        }
+    };
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Fonctions virtuelles pures et classes abstraites
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Créer des "interfaces" ou des classes de base qui ne peuvent PAS
+    être instanciées directement. Elles définissent un "contrat" que
+    les classes dérivées doivent respecter.
+
+FONCTION VIRTUELLE PURE:
+    Une fonction virtuelle suivie de = 0 est "pure".
+    Elle n'a pas d'implémentation dans la classe de base.
+    
+    Syntaxe:
+    virtual TypeRetour nomFonction(params) const = 0;
+    //                                            ^^^^
+    //                                            = 0 rend la fonction pure
+
+CLASSE ABSTRAITE:
+    Une classe qui contient AU MOINS une fonction virtuelle pure.
+    
+    Conséquences:
+    - On NE PEUT PAS créer d'instance de cette classe
+    - Les classes dérivées DOIVENT implémenter toutes les fonctions pures
+    - Si une dérivée n'implémente pas tout, elle reste abstraite
+
+POURQUOI FAIRE ÇA:
+    - Créer un Animal générique n'a pas de sens (quel son fait-il?)
+    - Forcer toutes les classes dérivées à implémenter certaines méthodes
+    - Définir une interface commune pour plusieurs classes
+
+EXEMPLE:
+    // Classe abstraite (ne peut pas être instanciée)
+    class Animal {
+    protected:
+        std::string type;
+    
+    public:
+        Animal() : type("Animal") {}
+        virtual ~Animal() {}
+        
+        // Fonction virtuelle pure: pas d'implémentation ici
+        virtual void makeSound() const = 0;
+        //                              ^^^^
+        
+        // Fonction normale (a une implémentation)
+        std::string getType() const { return type; }
+    };
+    
+    // Classe concrète (peut être instanciée)
+    class Dog : public Animal {
+    public:
+        Dog() : Animal() { type = "Dog"; }
+        
+        // DOIT implémenter makeSound() sinon Dog sera aussi abstraite
+        void makeSound() const {
+            cout << "Woaf! Woaf!" << endl;
+        }
+    };
+    
+    class Cat : public Animal {
+    public:
+        Cat() : Animal() { type = "Cat"; }
+        
+        // DOIT implémenter makeSound()
+        void makeSound() const {
+            cout << "Miaou! Miaou!" << endl;
+        }
+    };
+    
+    int main() {
+        // Animal animal;  // ❌ ERREUR DE COMPILATION!
+        // "cannot declare variable 'animal' to be of abstract type 'Animal'"
+        
+        Animal* animals[2];
+        animals[0] = new Dog();  // ✅ OK
+        animals[1] = new Cat();  // ✅ OK
+        
+        animals[0]->makeSound();  // Woaf! Woaf!
+        animals[1]->makeSound();  // Miaou! Miaou!
+        
+        delete animals[0];
+        delete animals[1];
+        
+        return 0;
+    }
+
+AVANTAGES:
+    ✅ Impossible de créer un Animal par erreur
+    ✅ Le compilateur force l'implémentation des méthodes requises
+    ✅ Code plus clair: on sait que Animal est juste un concept
+    ✅ Permet de créer des tableaux/listes de pointeurs Animal
+
+═══════════════════════════════════════════════════════════════════════════════
+4. Deep copy vs Shallow copy
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Comprendre comment copier correctement des objets qui contiennent
+    des pointeurs vers de la mémoire dynamique.
+
+SHALLOW COPY (copie superficielle) ❌:
+    Copie seulement la VALEUR du pointeur, pas les DONNÉES pointées.
+    Résultat: deux objets pointent vers la MÊME zone mémoire.
+    
+    class Dog {
+    private:
+        Brain* brain;
+    public:
+        // Constructeur par copie par DÉFAUT (généré par le compilateur)
+        // Fait une SHALLOW COPY! ❌
+    };
+    
+    Dog dog1;
+    Dog dog2(dog1);  // dog1.brain == dog2.brain (même adresse!)
+    
+    Problèmes:
+    1. Si dog1 modifie brain, dog2 voit les changements
+    2. Si dog1 est détruit, dog2.brain pointe vers mémoire libérée! (CRASH)
+    3. Si dog2 est détruit après, double free! (CRASH)
+
+DEEP COPY (copie profonde) ✅:
+    Crée une NOUVELLE copie des données pointées.
+    Résultat: deux objets indépendants avec leurs propres données.
+    
+    class Brain {
+    private:
+        std::string ideas[100];
+    public:
+        Brain() {}
+        
+        // Copy constructor pour Brain
+        Brain(const Brain& other) {
+            for (int i = 0; i < 100; i++) {
+                this->ideas[i] = other.ideas[i];
+            }
+        }
+        
+        // Assignment operator pour Brain
+        Brain& operator=(const Brain& other) {
+            if (this != &other) {
+                for (int i = 0; i < 100; i++) {
+                    this->ideas[i] = other.ideas[i];
+                }
+            }
+            return *this;
+        }
+    };
+    
+    class Dog : public Animal {
+    private:
+        Brain* brain;
+    
+    public:
+        Dog() : Animal() {
+            brain = new Brain();  // Allocation
+        }
+        
+        // Copy constructor - DEEP COPY ✅
+        Dog(const Dog& other) : Animal(other) {
+            // Créer un NOUVEAU Brain avec les données copiées
+            this->brain = new Brain(*other.brain);
+            //            ^^^ new = nouvelle allocation
+            //                ^^^^ *other.brain = copie du contenu
+        }
+        
+        // Assignment operator - DEEP COPY ✅
+        Dog& operator=(const Dog& other) {
+            if (this != &other) {
+                Animal::operator=(other);
+                
+                // Libérer l'ancien brain
+                delete this->brain;
+                
+                // Créer un NOUVEAU brain avec les données copiées
+                this->brain = new Brain(*other.brain);
+            }
+            return *this;
+        }
+        
+        // Destructeur
+        ~Dog() {
+            delete brain;  // Chaque Dog libère SON brain
+        }
+    };
+    
+    // Utilisation
+    Dog dog1;
+    dog1.getBrain()->setIdea(0, "I want food");
+    
+    Dog dog2(dog1);  // Deep copy
+    // dog1.brain != dog2.brain (adresses différentes!)
+    // Mais les ideas sont copiées
+    
+    dog1.getBrain()->setIdea(0, "I want sleep");
+    // dog2 n'est PAS affecté! ✅
+
+COMMENT VÉRIFIER:
+    Dog* dog1 = new Dog();
+    Dog* dog2 = new Dog(*dog1);
+    
+    cout << "dog1 brain: " << dog1->getBrain() << endl;
+    cout << "dog2 brain: " << dog2->getBrain() << endl;
+    
+    // Si les adresses sont DIFFÉRENTES → Deep copy ✅
+    // Si les adresses sont IDENTIQUES → Shallow copy ❌
+
+RÈGLE:
+    Si votre classe a des attributs pointeurs vers mémoire dynamique,
+    vous DEVEZ implémenter:
+    1. Copy constructor avec deep copy
+    2. Assignment operator avec deep copy
+    3. Destructeur qui libère la mémoire
+
+═══════════════════════════════════════════════════════════════════════════════
+5. Démonstration: Pourquoi virtual est nécessaire (WrongAnimal)
+═══════════════════════════════════════════════════════════════════════════════
+
+EXEMPLE SANS virtual (comportement incorrect):
+    class WrongAnimal {
+    public:
+        void makeSound() const {  // PAS virtual!
+            cout << "Wrong animal sound" << endl;
+        }
+    };
+    
+    class WrongCat : public WrongAnimal {
+    public:
+        void makeSound() const {
+            cout << "Wrong Miaou" << endl;
+        }
+    };
+    
+    // Test
+    WrongCat cat;
+    cat.makeSound();  // "Wrong Miaou" ✅
+    
+    WrongAnimal* animal = new WrongCat();
+    animal->makeSound();  // "Wrong animal sound" ❌
+    // On voulait "Wrong Miaou" mais sans virtual, impossible!
+    
+    delete animal;
+
+AVEC virtual (comportement correct):
+    class Animal {
+    public:
+        virtual void makeSound() const {  // AVEC virtual!
+            cout << "Animal sound" << endl;
+        }
+        virtual ~Animal() {}
+    };
+    
+    class Cat : public Animal {
+    public:
+        void makeSound() const {
+            cout << "Miaou" << endl;
+        }
+    };
+    
+    // Test
+    Cat cat;
+    cat.makeSound();  // "Miaou" ✅
+    
+    Animal* animal = new Cat();
+    animal->makeSound();  // "Miaou" ✅
+    // Le bon comportement grâce à virtual!
+    
+    delete animal;
+
+EXPLICATION TECHNIQUE:
+    Sans virtual:
+    - Le compilateur décide STATIQUEMENT quelle fonction appeler
+    - Il regarde seulement le TYPE DU POINTEUR (Animal*)
+    - → Appelle Animal::makeSound()
+    
+    Avec virtual:
+    - Le compilateur utilise une "vtable" (table de fonctions virtuelles)
+    - Il regarde le TYPE RÉEL DE L'OBJET à l'exécution (Cat)
+    - → Appelle Cat::makeSound()
+
+═══════════════════════════════════════════════════════════════════════════════
+RÉSUMÉ CPP4
+═══════════════════════════════════════════════════════════════════════════════
+
+CONCEPTS CLÉS:
+
+1. POLYMORPHISME:
+   - Permet à un pointeur/référence de classe de base d'appeler
+     les méthodes de la classe dérivée
+   - Nécessite le mot-clé virtual dans la classe de base
+
+2. VIRTUAL:
+   - virtual dans méthode → permet le polymorphisme
+   - TOUJOURS virtual pour le destructeur si héritage
+   - Sans virtual → pas de polymorphisme (comportement statique)
+
+3. CLASSE ABSTRAITE:
+   - Contient au moins une fonction virtuelle pure (= 0)
+   - Ne peut PAS être instanciée
+   - Force les dérivées à implémenter les fonctions pures
+   - Utile pour créer des interfaces/contrats
+
+4. DEEP COPY:
+   - Pour classes avec pointeurs vers mémoire dynamique
+   - Copy constructor: créer NOUVELLE copie avec new
+   - Assignment operator: delete ancien + créer NOUVELLE copie
+   - Destructeur: delete pour libérer
+   - Chaque objet possède ses propres données
+
+5. DESTRUCTEUR VIRTUEL:
+   - CRITIQUE pour éviter les fuites mémoire
+   - Toujours virtual si la classe a des fonctions virtual
+   - Garantit l'appel du destructeur dérivé via pointeur de base
+
+SYNTAXE IMPORTANTE:
+    // Fonction virtuelle normale
+    virtual void methode() const;
+    
+    // Fonction virtuelle pure (classe abstraite)
+    virtual void methode() const = 0;
+    
+    // Destructeur virtuel (TOUJOURS dans classe de base!)
+    virtual ~ClassName();
+    
+    // Deep copy dans copy constructor
+    Dog(const Dog& other) : Animal(other) {
+        this->brain = new Brain(*other.brain);
+    }
+    
+    // Deep copy dans assignment operator
+    Dog& operator=(const Dog& other) {
+        if (this != &other) {
+            delete this->brain;
+            this->brain = new Brain(*other.brain);
+        }
+        return *this;
+    }
+
+PIÈGES À ÉVITER:
+    ❌ Oublier virtual sur le destructeur → fuites mémoire
+    ❌ Faire une shallow copy avec des pointeurs → double free
+    ❌ Ne pas implémenter les fonctions pures → classe reste abstraite
+    ❌ Oublier delete dans destructeur → fuites mémoire
+    ❌ Ne pas vérifier this != &other dans operator= → problèmes
+
+
+10. Héritage virtuel pour résoudre le problème du diamant
+
+11. TOUJOURS mettre le destructeur virtual dans une classe de base
+
+12. Implémenter deep copy pour les classes avec pointeurs
+
+13. = 0 après une fonction virtuelle la rend pure (classe abstraite)
+
+14. Une classe abstraite ne peut pas être instanciée
+
+
+CPP4 EX00 - Polymorphisme et fonctions virtuelles
+--------------------------------------------------
+NOUVELLES NOTIONS:
+- Polymorphisme
+- Fonctions virtuelles (virtual)
+- Liaison dynamique (dynamic binding)
+- Destructeur virtuel
+- Classes de base et dérivées
+- Pointeurs de classe de base vers classes dérivées
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Le polymorphisme
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Le polymorphisme permet à un objet d'une classe dérivée d'être traité
+    comme un objet de sa classe de base, tout en conservant son comportement
+    spécifique. C'est un des piliers de la programmation orientée objet.
+
+COMMENT ÇA MARCHE:
+    - Avec le mot-clé 'virtual', on indique qu'une méthode peut être
+      réimplémentée (overridden) dans les classes dérivées
+    - Quand on appelle une méthode virtuelle via un pointeur/référence de
+      classe de base, c'est la version de la classe réelle qui est appelée
+    - Sans 'virtual', c'est toujours la méthode de la classe de base qui
+      serait appelée (liaison statique)
+
+EXEMPLE AVEC VIRTUAL (bon comportement):
+    class Animal {
+    protected:
+        std::string type;
+        
+    public:
+        Animal() : type("Animal") {}
+        virtual ~Animal() {}  // IMPORTANT: destructeur virtuel!
+        
+        virtual void makeSound() const {
+            std::cout << "* Animal sound *" << std::endl;
+        }
+        
+        std::string getType() const { return type; }
+    };
+
+    class Dog : public Animal {
+    public:
+        Dog() : Animal() {
+            type = "Dog";
+        }
+        
+        void makeSound() const {  // Override la méthode de Animal
+            std::cout << "Woaf! Woaf!" << std::endl;
+        }
+    };
+
+    class Cat : public Animal {
+    public:
+        Cat() : Animal() {
+            type = "Cat";
+        }
+        
+        void makeSound() const {  // Override la méthode de Animal
+            std::cout << "Miaou! Miaou!" << std::endl;
+        }
+    };
+
+    // UTILISATION:
+    const Animal* a = new Animal();
+    const Animal* d = new Dog();
+    const Animal* c = new Cat();
+    
+    a->makeSound();  // Affiche: * Animal sound *
+    d->makeSound();  // Affiche: Woaf! Woaf!  (méthode de Dog)
+    c->makeSound();  // Affiche: Miaou! Miaou! (méthode de Cat)
+    
+    // ⚠️ Grâce au virtual, même si d et c sont des pointeurs Animal*,
+    //    les méthodes des classes Dog et Cat sont appelées!
+
+EXEMPLE SANS VIRTUAL (mauvais comportement):
+    class WrongAnimal {
+    protected:
+        std::string type;
+        
+    public:
+        WrongAnimal() : type("WrongAnimal") {}
+        ~WrongAnimal() {}  // Pas virtual!
+        
+        void makeSound() const {  // Pas virtual!
+            std::cout << "* Wrong Animal sound *" << std::endl;
+        }
+    };
+
+    class WrongCat : public WrongAnimal {
+    public:
+        WrongCat() : WrongAnimal() {
+            type = "WrongCat";
+        }
+        
+        void makeSound() const {
+            std::cout << "Wrong Miaou!" << std::endl;
+        }
+    };
+
+    // UTILISATION:
+    const WrongAnimal* wa = new WrongAnimal();
+    const WrongAnimal* wc = new WrongCat();
+    
+    wa->makeSound();  // Affiche: * Wrong Animal sound *
+    wc->makeSound();  // Affiche: * Wrong Animal sound * (pas Wrong Miaou!)
+    
+    // ⚠️ Sans virtual, c'est TOUJOURS la méthode de WrongAnimal qui est
+    //    appelée, même si l'objet est un WrongCat!
+
+DESTRUCTEUR VIRTUEL - POURQUOI C'EST CRUCIAL:
+    class Base {
+    public:
+        Base() { std::cout << "Base constructor" << std::endl; }
+        ~Base() { std::cout << "Base destructor" << std::endl; }
+    };
+
+    class Derived : public Base {
+    private:
+        int* data;
+    public:
+        Derived() : data(new int[100]) {
+            std::cout << "Derived constructor" << std::endl;
+        }
+        ~Derived() {
+            delete[] data;
+            std::cout << "Derived destructor" << std::endl;
+        }
+    };
+
+    // SANS virtual:
+    Base* obj = new Derived();
+    delete obj;
+    // Affiche seulement: Base destructor
+    // ⚠️ FUITE MÉMOIRE! data n'est jamais libéré!
+    
+    // AVEC virtual:
+    class Base {
+    public:
+        virtual ~Base() { std::cout << "Base destructor" << std::endl; }
+    };
+    
+    Base* obj = new Derived();
+    delete obj;
+    // Affiche:
+    // Derived destructor (libère data)
+    // Base destructor
+    // ✓ Pas de fuite mémoire!
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Résumé du polymorphisme
+═══════════════════════════════════════════════════════════════════════════════
+
+RÈGLES IMPORTANTES:
+    1. Toujours mettre 'virtual' devant les méthodes à override
+    2. TOUJOURS mettre le destructeur virtual dans une classe de base
+    3. Le mot virtual n'est nécessaire que dans la classe de base
+       (mais on peut le mettre aussi dans les dérivées pour clarté)
+    4. Les méthodes virtuelles permettent la liaison dynamique (runtime)
+    5. Sans virtual, c'est la liaison statique (compile time)
+
+SYNTAXE:
+    // Classe de base
+    class Base {
+    public:
+        virtual void methode();       // Méthode virtuelle
+        virtual ~Base();              // Destructeur virtuel (CRUCIAL!)
+    };
+    
+    // Classe dérivée
+    class Derived : public Base {
+    public:
+        void methode();  // Override (virtual optionnel ici)
+        ~Derived();      // Override du destructeur
+    };
+
+
+CPP4 EX01 - Deep Copy et gestion de la mémoire avec le polymorphisme
+---------------------------------------------------------------------
+NOUVELLES NOTIONS:
+- Deep copy (copie profonde)
+- Shallow copy (copie superficielle)
+- Copy constructor avec allocation dynamique
+- Assignment operator avec allocation dynamique
+- Gestion de la mémoire dans une hiérarchie de classes
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Shallow Copy vs Deep Copy
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Quand une classe contient des pointeurs vers de la mémoire allouée
+    dynamiquement, il faut faire attention à la manière dont on copie
+    les objets. Une shallow copy copie juste les pointeurs, tandis qu'une
+    deep copy crée de nouvelles allocations mémoire.
+
+PROBLÈME AVEC SHALLOW COPY (copie par défaut):
+    class Dog {
+    private:
+        Brain* brain;
+        
+    public:
+        Dog() {
+            brain = new Brain();  // Allocation mémoire
+        }
+        
+        ~Dog() {
+            delete brain;  // Libération mémoire
+        }
+        
+        // Pas de copy constructor personnalisé!
+        // Pas d'assignment operator personnalisé!
+    };
+
+    // UTILISATION:
+    Dog dog1;
+    Dog dog2 = dog1;  // Copie par défaut (shallow copy)
+    
+    // ⚠️ PROBLÈME:
+    // dog1.brain et dog2.brain pointent vers LA MÊME mémoire!
+    // Quand dog1 est détruit → delete brain
+    // Quand dog2 est détruit → delete brain ENCORE!
+    // → DOUBLE FREE → CRASH!
+
+SOLUTION AVEC DEEP COPY:
+    class Brain {
+    private:
+        std::string ideas[100];
+        
+    public:
+        Brain() {
+            std::cout << "Brain created" << std::endl;
+        }
+        
+        Brain(const Brain& other) {
+            std::cout << "Brain copied" << std::endl;
+            for (int i = 0; i < 100; i++) {
+                this->ideas[i] = other.ideas[i];
+            }
+        }
+        
+        Brain& operator=(const Brain& other) {
+            std::cout << "Brain assigned" << std::endl;
+            if (this != &other) {
+                for (int i = 0; i < 100; i++) {
+                    this->ideas[i] = other.ideas[i];
+                }
+            }
+            return *this;
+        }
+        
+        ~Brain() {
+            std::cout << "Brain destroyed" << std::endl;
+        }
+        
+        void setIdea(int index, const std::string& idea) {
+            if (index >= 0 && index < 100)
+                ideas[index] = idea;
+        }
+        
+        std::string getIdea(int index) const {
+            if (index >= 0 && index < 100)
+                return ideas[index];
+            return "";
+        }
+    };
+
+    class Dog : public Animal {
+    private:
+        Brain* brain;
+        
+    public:
+        Dog() : Animal() {
+            type = "Dog";
+            brain = new Brain();  // Allocation
+            std::cout << "Dog created" << std::endl;
+        }
+        
+        // COPY CONSTRUCTOR avec DEEP COPY
+        Dog(const Dog& other) : Animal(other) {
+            std::cout << "Dog copied" << std::endl;
+            // On crée un NOUVEAU Brain en copiant l'ancien
+            this->brain = new Brain(*other.brain);
+            // ✓ Maintenant chaque Dog a son propre Brain!
+        }
+        
+        // ASSIGNMENT OPERATOR avec DEEP COPY
+        Dog& operator=(const Dog& other) {
+            std::cout << "Dog assigned" << std::endl;
+            if (this != &other) {
+                Animal::operator=(other);
+                
+                // Important: libérer l'ancien brain d'abord
+                delete this->brain;
+                
+                // Créer un nouveau brain en copiant
+                this->brain = new Brain(*other.brain);
+            }
+            return *this;
+        }
+        
+        ~Dog() {
+            delete brain;  // Libération
+            std::cout << "Dog destroyed" << std::endl;
+        }
+        
+        void makeSound() const {
+            std::cout << "Woaf! Woaf!" << std::endl;
+        }
+        
+        Brain* getBrain() const {
+            return brain;
+        }
+    };
+
+    // UTILISATION:
+    Dog dog1;
+    dog1.getBrain()->setIdea(0, "I want food!");
+    
+    Dog dog2 = dog1;  // Deep copy!
+    dog2.getBrain()->setIdea(0, "I want to play!");
+    
+    std::cout << dog1.getBrain()->getIdea(0) << std::endl;  // I want food!
+    std::cout << dog2.getBrain()->getIdea(0) << std::endl;  // I want to play!
+    
+    // ✓ Chaque Dog a son propre Brain indépendant
+    // ✓ Pas de double free au moment de la destruction
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Test de deep copy avec tableaux
+═══════════════════════════════════════════════════════════════════════════════
+
+EXEMPLE DE TEST:
+    int main() {
+        // Test avec tableau polymorphique
+        const Animal* animals[4];
+        
+        // Moitié Dogs, moitié Cats
+        for (int i = 0; i < 2; i++) {
+            animals[i] = new Dog();
+        }
+        for (int i = 2; i < 4; i++) {
+            animals[i] = new Cat();
+        }
+        
+        // Test de deep copy
+        Dog basic;
+        {
+            Dog tmp = basic;  // Copy constructor
+            // tmp est détruit ici
+        }
+        // basic doit toujours être valide!
+        
+        // Nettoyage
+        for (int i = 0; i < 4; i++) {
+            delete animals[i];
+        }
+        
+        return 0;
+    }
+    
+    // SORTIE ATTENDUE:
+    // - Chaque Dog/Cat crée son propre Brain
+    // - Les copies créent de nouveaux Brains indépendants
+    // - Aucun crash lors des destructions
+    // - Pas de fuites mémoire
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Règles pour la deep copy
+═══════════════════════════════════════════════════════════════════════════════
+
+LA RÈGLE DES TROIS (Rule of Three):
+    Si une classe définit l'un de ces éléments, elle doit les définir tous:
+    1. Destructeur
+    2. Copy constructor
+    3. Assignment operator
+
+TEMPLATE POUR DEEP COPY:
+    class MaClasse {
+    private:
+        TypeDonnee* ptr;
+        
+    public:
+        // Constructeur
+        MaClasse() {
+            ptr = new TypeDonnee();
+        }
+        
+        // Copy constructor (deep copy)
+        MaClasse(const MaClasse& other) {
+            ptr = new TypeDonnee(*other.ptr);
+        }
+        
+        // Assignment operator (deep copy)
+        MaClasse& operator=(const MaClasse& other) {
+            if (this != &other) {
+                delete ptr;                      // Libère l'ancien
+                ptr = new TypeDonnee(*other.ptr); // Copie le nouveau
+            }
+            return *this;
+        }
+        
+        // Destructeur
+        ~MaClasse() {
+            delete ptr;
+        }
+    };
+
+ÉTAPES DE L'ASSIGNMENT OPERATOR:
+    1. Vérifier si on s'assigne à soi-même (this != &other)
+    2. Appeler l'assignment de la classe de base (si héritage)
+    3. Libérer les ressources actuelles (delete)
+    4. Allouer de nouvelles ressources
+    5. Copier les données
+    6. Retourner *this
+
+
+CPP4 EX02 - Classes abstraites et fonctions virtuelles pures
+-------------------------------------------------------------
+NOUVELLES NOTIONS:
+- Classe abstraite
+- Fonction virtuelle pure (= 0)
+- Interface
+- Impossibilité d'instancier une classe abstraite
+
+═══════════════════════════════════════════════════════════════════════════════
+1. Fonctions virtuelles pures
+═══════════════════════════════════════════════════════════════════════════════
+
+À QUOI ÇA SERT:
+    Une fonction virtuelle pure force les classes dérivées à implémenter
+    cette fonction. Cela permet de définir une interface que toutes les
+    classes dérivées doivent respecter, sans fournir d'implémentation
+    par défaut.
+
+COMMENT ÇA MARCHE:
+    On ajoute '= 0' après la déclaration d'une fonction virtuelle pour
+    la rendre "pure". Une classe qui contient au moins une fonction
+    virtuelle pure devient une classe abstraite.
+
+SYNTAXE:
+    class Animal {
+    protected:
+        std::string type;
+        
+    public:
+        Animal() : type("Animal") {}
+        Animal(const Animal& other) : type(other.type) {}
+        Animal& operator=(const Animal& other) {
+            if (this != &other)
+                type = other.type;
+            return *this;
+        }
+        virtual ~Animal() {}
+        
+        // FONCTION VIRTUELLE PURE
+        virtual void makeSound() const = 0;  // = 0 la rend pure!
+        
+        std::string getType() const { return type; }
+    };
+
+    // ⚠️ IMPOSSIBLE:
+    Animal a;  // ERREUR: Animal est abstraite!
+    Animal* ptr = new Animal();  // ERREUR: ne compile pas!
+    
+    // ✓ POSSIBLE:
+    Animal* ptr = new Dog();  // OK: Dog implémente makeSound()
+    Animal* ptr = new Cat();  // OK: Cat implémente makeSound()
+
+EXEMPLE COMPLET:
+    // Classe abstraite (interface)
+    class Animal {
+    protected:
+        std::string type;
+        
+    public:
+        Animal();
+        Animal(const Animal& other);
+        Animal& operator=(const Animal& other);
+        virtual ~Animal();
+        
+        virtual void makeSound() const = 0;  // Pure!
+        std::string getType() const;
+    };
+
+    // Classe concrète (implémente la fonction pure)
+    class Dog : public Animal {
+    private:
+        Brain* brain;
+        
+    public:
+        Dog() : Animal() {
+            type = "Dog";
+            brain = new Brain();
+        }
+        
+        Dog(const Dog& other) : Animal(other) {
+            brain = new Brain(*other.brain);
+        }
+        
+        Dog& operator=(const Dog& other) {
+            if (this != &other) {
+                Animal::operator=(other);
+                delete brain;
+                brain = new Brain(*other.brain);
+            }
+            return *this;
+        }
+        
+        ~Dog() {
+            delete brain;
+        }
+        
+        // IMPLÉMENTATION de la fonction pure
+        void makeSound() const {
+            std::cout << "Woaf! Woaf!" << std::endl;
+        }
+        
+        Brain* getBrain() const {
+            return brain;
+        }
+    };
+
+    class Cat : public Animal {
+    private:
+        Brain* brain;
+        
+    public:
+        Cat() : Animal() {
+            type = "Cat";
+            brain = new Brain();
+        }
+        
+        Cat(const Cat& other) : Animal(other) {
+            brain = new Brain(*other.brain);
+        }
+        
+        Cat& operator=(const Cat& other) {
+            if (this != &other) {
+                Animal::operator=(other);
+                delete brain;
+                brain = new Brain(*other.brain);
+            }
+            return *this;
+        }
+        
+        ~Cat() {
+            delete brain;
+        }
+        
+        // IMPLÉMENTATION de la fonction pure
+        void makeSound() const {
+            std::cout << "Miaou! Miaou!" << std::endl;
+        }
+        
+        Brain* getBrain() const {
+            return brain;
+        }
+    };
+
+═══════════════════════════════════════════════════════════════════════════════
+2. Classe abstraite
+═══════════════════════════════════════════════════════════════════════════════
+
+DÉFINITION:
+    Une classe abstraite est une classe qui contient au moins une fonction
+    virtuelle pure. Elle ne peut pas être instanciée directement, elle sert
+    uniquement de classe de base pour d'autres classes.
+
+PROPRIÉTÉS:
+    ✓ Peut avoir des attributs
+    ✓ Peut avoir des méthodes concrètes (avec implémentation)
+    ✓ Peut avoir des constructeurs et un destructeur
+    ✓ DOIT avoir au moins une fonction virtuelle pure
+    ✗ NE PEUT PAS être instanciée directement
+
+UTILISATION:
+    // Classe abstraite
+    class IAnimal {
+    public:
+        virtual ~IAnimal() {}
+        virtual void makeSound() const = 0;
+        virtual void move() const = 0;
+    };
+    
+    // Implémentation
+    class Bird : public IAnimal {
+    public:
+        void makeSound() const {
+            std::cout << "Cui cui!" << std::endl;
+        }
+        
+        void move() const {
+            std::cout << "Flying..." << std::endl;
+        }
+    };
+    
+    class Fish : public IAnimal {
+    public:
+        void makeSound() const {
+            std::cout << "Blob blob!" << std::endl;
+        }
+        
+        void move() const {
+            std::cout << "Swimming..." << std::endl;
+        }
+    };
+    
+    // UTILISATION POLYMORPHIQUE:
+    int main() {
+        IAnimal* animals[2];
+        animals[0] = new Bird();
+        animals[1] = new Fish();
+        
+        for (int i = 0; i < 2; i++) {
+            animals[i]->makeSound();
+            animals[i]->move();
+            delete animals[i];
+        }
+        
+        return 0;
+    }
+    
+    // Affiche:
+    // Cui cui!
+    // Flying...
+    // Blob blob!
+    // Swimming...
+
+═══════════════════════════════════════════════════════════════════════════════
+3. Interface en C++
+═══════════════════════════════════════════════════════════════════════════════
+
+CONCEPT D'INTERFACE:
+    En C++, il n'y a pas de mot-clé 'interface' comme en Java ou C#.
+    On crée une interface en faisant une classe abstraite pure, c'est-à-dire
+    une classe qui ne contient QUE des fonctions virtuelles pures.
+
+CONVENTION DE NOMMAGE:
+    Par convention, on préfixe souvent les interfaces avec 'I':
+    - IDrawable
+    - ISerializable
+    - IComparable
+    etc.
+
+EXEMPLE D'INTERFACE:
+    // Interface pure (que des fonctions virtuelles pures)
+    class IDrawable {
+    public:
+        virtual ~IDrawable() {}
+        virtual void draw() const = 0;
+        virtual void setColor(const std::string& color) = 0;
+    };
+    
+    class IMovable {
+    public:
+        virtual ~IMovable() {}
+        virtual void move(int x, int y) = 0;
+        virtual void getPosition(int& x, int& y) const = 0;
+    };
+    
+    // Classe implémentant plusieurs interfaces
+    class Shape : public IDrawable, public IMovable {
+    private:
+        std::string color;
+        int posX, posY;
+        
+    public:
+        Shape() : color("black"), posX(0), posY(0) {}
+        
+        // Implémentation de IDrawable
+        void draw() const {
+            std::cout << "Drawing shape at (" << posX << "," << posY << ")" << std::endl;
+        }
+        
+        void setColor(const std::string& c) {
+            color = c;
+        }
+        
+        // Implémentation de IMovable
+        void move(int x, int y) {
+            posX = x;
+            posY = y;
+        }
+        
+        void getPosition(int& x, int& y) const {
+            x = posX;
+            y = posY;
+        }
+    };
+
+AVANTAGES DES CLASSES ABSTRAITES:
+    1. Forcer un contrat: toutes les classes dérivées doivent implémenter
+       certaines méthodes
+    2. Polymorphisme: manipuler des objets différents via une interface commune
+    3. Extensibilité: ajouter de nouvelles classes sans modifier le code
+       existant
+    4. Documentation: la classe abstraite documente ce que les dérivées
+       doivent faire
+
+
+═══════════════════════════════════════════════════════════════════════════════
+RÉCAPITULATIF CPP4
+═══════════════════════════════════════════════════════════════════════════════
+
+NOUVELLES NOTIONS IMPORTANTES:
+
+1. POLYMORPHISME:
+   - Traiter des objets dérivés via des pointeurs/références de base
+   - Permet d'écrire du code générique et extensible
+
+2. FONCTIONS VIRTUELLES:
+   - Mot-clé 'virtual' pour activer la liaison dynamique
+   - Permet d'appeler la bonne méthode selon le type réel de l'objet
+
+3. DESTRUCTEUR VIRTUEL:
+   - TOUJOURS virtual dans une classe de base polymorphique
+   - Évite les fuites mémoire lors de la destruction via pointeur de base
+
+4. DEEP COPY:
+   - Copie profonde: créer de nouvelles allocations mémoire
+   - Nécessaire quand la classe contient des pointeurs
+   - Règle des trois: destructeur, copy constructor, assignment operator
+
+5. CLASSES ABSTRAITES:
+   - Contiennent au moins une fonction virtuelle pure (= 0)
+   - Ne peuvent pas être instanciées
+   - Servent d'interface ou de contrat
+
+6. FONCTIONS VIRTUELLES PURES:
+   - virtual void methode() = 0;
+   - Forcent les classes dérivées à implémenter la méthode
+   - Rendent la classe abstraite
+
+PIÈGES À ÉVITER:
+    ❌ Oublier virtual sur le destructeur → fuites mémoire
+    ❌ Faire une shallow copy avec des pointeurs → double free
+    ❌ Ne pas implémenter les fonctions pures → classe reste abstraite
+    ❌ Oublier delete dans destructeur → fuites mémoire
+    ❌ Ne pas vérifier this != &other dans operator= → problèmes
+    ❌ Oublier d'appeler le constructeur de base dans classe dérivée
+
+BONNES PRATIQUES:
+    ✓ Toujours virtual sur le destructeur si la classe a des virtual
+    ✓ Implémenter la règle des trois si la classe a des pointeurs
+    ✓ Utiliser des classes abstraites pour définir des interfaces
+    ✓ Tester les deep copies pour vérifier qu'elles fonctionnent
+    ✓ Utiliser le polymorphisme pour écrire du code flexible
+    ✓ Appeler delete via pointeur de base pour tester le virtual destructor
+
+SYNTAXE CLÉS:
+    // Fonction virtuelle
+    virtual void methode() const;
+    
+    // Fonction virtuelle pure (= classe abstraite)
+    virtual void methode() const = 0;
+    
+    // Destructeur virtuel (CRUCIAL!)
+    virtual ~ClassName();
+    
+    // Copy constructor avec deep copy
+    MaClasse(const MaClasse& other) {
+        this->ptr = new Type(*other.ptr);
+    }
+    
+    // Assignment operator avec deep copy
+    MaClasse& operator=(const MaClasse& other) {
+        if (this != &other) {
+            delete this->ptr;
+            this->ptr = new Type(*other.ptr);
+        }
+        return *this;
+    }

@@ -6,7 +6,7 @@
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 11:32:04 by bozil             #+#    #+#             */
-/*   Updated: 2026/02/04 11:54:14 by bozil            ###   ########.fr       */
+/*   Updated: 2026/02/10 22:06:04 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 class ClapTrap
 {
-  protected:  // Changed from private to allow inheritance
+  protected:
 	std::string name;
 	unsigned int HP;
 	unsigned int EP;
