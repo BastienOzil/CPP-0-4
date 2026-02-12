@@ -6,7 +6,7 @@
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/07 10:09:08 by bozil             #+#    #+#             */
-/*   Updated: 2026/02/10 22:03:50 by bozil            ###   ########.fr       */
+/*   Updated: 2026/02/12 12:25:04 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ Animal::~Animal()
 
 void Animal::makeSound() const
 {
-    std::cout << "* Animal sound *" << std::endl;
+    std::cout << "Animal sound" << std::endl;
 }
 
 std::string Animal::getType() const

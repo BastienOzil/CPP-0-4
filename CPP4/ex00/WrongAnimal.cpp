@@ -6,7 +6,7 @@
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/07 10:10:45 by bozil             #+#    #+#             */
-/*   Updated: 2026/02/10 22:04:04 by bozil            ###   ########.fr       */
+/*   Updated: 2026/02/12 12:27:47 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ WrongAnimal::~WrongAnimal()
 
 void WrongAnimal::makeSound() const
 {
-    std::cout << "* Wrong animal sound *" << std::endl;
+    std::cout << "Wrong animal sound" << std::endl;
 }
 
 std::string WrongAnimal::getType() const
