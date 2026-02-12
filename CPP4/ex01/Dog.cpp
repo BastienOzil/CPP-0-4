@@ -6,7 +6,7 @@
 /*   By: bozil <bozil@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 15:10:32 by bozil             #+#    #+#             */
-/*   Updated: 2026/02/10 22:04:21 by bozil            ###   ########.fr       */
+/*   Updated: 2026/02/12 09:14:15 by bozil            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ Dog::Dog() : Animal()
 Dog::Dog(const Dog &other) : Animal(other)
 {
     std::cout << "Dog copy constructor called" << std::endl;
-    this->brain = new Brain(*other.brain); // Deep copy!
+    this->brain = new Brain(*other.brain); 
 }
 
 Dog &Dog::operator=(const Dog &other)
@@ -32,7 +32,7 @@ Dog &Dog::operator=(const Dog &other)
     {
         Animal::operator=(other);
         delete this->brain;
-        this->brain = new Brain(*other.brain); // Deep copy!
+        this->brain = new Brain(*other.brain);
     }
     return *this;
 }
