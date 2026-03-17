@@ -1,0 +1,153 @@
+#pragma once : est une directive du préprocesseur utilisée pour empêcher
+que les fichiers en-tête soient inclus plusieurs fois.
+Elle évite les redéfinitions lors de la compilation.
+Utilisé dans : tous les headers du projet.
+
+--CPP0--
+
+std::cout/std::endl : est le mécanisme standard d'affichage dans le terminal.
+Il permet d'écrire du texte et de forcer un retour à la ligne.
+Le chaînage avec << rend l'affichage lisible et flexible.
+Utilisé dans : CPP0/ex00, ex01, ex02.
+
+std::string : est le type standard pour manipuler des chaînes de caractères.
+Il gère automatiquement la mémoire et propose des méthodes utiles.
+Il simplifie la lecture et la transformation de texte.
+Utilisé dans : CPP0/ex00, ex01, ex02.
+
+Méthode const : est une méthode qui garantit de ne pas modifier l'objet.
+Elle sécurise l'interface de lecture d'une classe.
+Elle est recommandée pour les getters et fonctions d'affichage.
+Utilisé dans : CPP0/ex01, ex02.
+
+Membre statique : est un attribut ou une méthode partagée par toutes les instances.
+Il appartient à la classe et non à un objet particulier.
+Il sert à stocker des informations globales à la classe.
+Utilisé dans : CPP0/ex02.
+
+
+--CPP1--
+
+Allocation dynamique (new/delete) : est la création manuelle d'objets sur le heap.
+Elle permet de contrôler la durée de vie au-delà du scope courant.
+La mémoire allouée doit toujours être libérée avec delete.
+Utilisé dans : CPP1/ex00, ex01.
+
+Tableau dynamique (new[]/delete[]) : est l'allocation d'un ensemble d'objets.
+Il nécessite l'opérateur delete[] pour une libération correcte.
+Mélanger delete et delete[] provoque un comportement indéfini.
+Utilisé dans : CPP1/ex01.
+
+Référence : est un alias permanent vers une variable existante.
+Elle doit être initialisée dès sa déclaration.
+Elle évite les copies tout en gardant une syntaxe simple.
+Utilisé dans : CPP1/ex02, ex03.
+
+Liste d'initialisation : est la syntaxe du constructeur avant son corps.
+Elle est obligatoire pour les références et attributs const.
+Elle améliore aussi la performance d'initialisation.
+Utilisé dans : CPP1/ex03.
+
+Flux de fichier (ifstream/ofstream) : est l'API de lecture et écriture de fichiers.
+Il permet d'ouvrir, lire, écrire puis fermer un fichier texte.
+Il s'utilise avec std::getline pour traiter ligne par ligne.
+Utilisé dans : CPP1/ex04.
+
+Pointeur sur méthode : est un pointeur vers une fonction membre d'une classe.
+Il permet de sélectionner un comportement dynamiquement sans gros switch.
+La syntaxe d'appel passe par objet.*ptr ou objetPtr->*ptr.
+Utilisé dans : CPP1/ex05, ex06.
+
+
+--CPP2--
+
+Forme Canonique Orthodoxe : est l'ensemble des 4 fonctions spéciales d'une classe.
+Elle contient constructeur par défaut, copie, assignation et destructeur.
+Elle garantit une gestion correcte du cycle de vie des objets.
+Utilisé dans : CPP2/ex00, ex01, ex02, ex03.
+
+Constructeur par copie : est la création d'un objet à partir d'un autre.
+Il prend généralement un paramètre const Classe&.
+Il doit reproduire fidèlement l'état source.
+Utilisé dans : CPP2/ex00, ex01, ex02, ex03.
+
+Opérateur d'assignation : est la copie d'état vers un objet déjà existant.
+Il doit gérer le cas d'auto-assignation this == &other.
+Il retourne *this pour permettre le chaînage.
+Utilisé dans : CPP2/ex00, ex01, ex02, ex03.
+
+Surcharge d'opérateurs : est la redéfinition d'opérateurs pour un type personnalisé.
+Elle rend l'utilisation de la classe plus naturelle.
+Les opérateurs doivent respecter la logique attendue du langage.
+Utilisé dans : CPP2/ex02.
+
+Pré/Post incrémentation : est la distinction entre ++a et a++.
+La forme pré-incrémentée est souvent plus efficace.
+La forme post-incrémentée retourne une copie temporaire.
+Utilisé dans : CPP2/ex02.
+
+Fonction statique min/max : est une méthode utilitaire attachée à la classe.
+Elle compare deux objets sans dépendre d'une instance courante.
+Elle existe souvent en version const et non-const.
+Utilisé dans : CPP2/ex02.
+
+
+--CPP3--
+
+Héritage simple : est la création d'une classe dérivée depuis une classe de base.
+Il permet la réutilisation de code et l'extension de comportement.
+La dérivée peut ajouter ou redéfinir des membres.
+Utilisé dans : CPP3/ex00, ex01, ex02, ex03.
+
+Override : est la redéfinition d'une méthode héritée avec la même signature.
+Il spécialise le comportement pour la classe dérivée.
+Il masque la version de la classe de base.
+Utilisé dans : CPP3/ex01, ex02, ex03.
+
+Héritage multiple : est la dérivation depuis plusieurs classes parents.
+Il combine des comportements venant de plusieurs hiérarchies.
+Il peut créer des ambiguïtés de résolution de membres.
+Utilisé dans : CPP3/ex03.
+
+Problème du diamant : est le doublon d'une base commune via héritage multiple.
+Il est résolu avec virtual public sur les classes intermédiaires.
+Cette technique évite d'avoir plusieurs copies de la même base.
+Utilisé dans : CPP3/ex03.
+
+Name shadowing : est le masquage d'un membre de la base par la dérivée.
+On accède explicitement à la base via Base::membre.
+Cela permet de distinguer deux membres homonymes.
+Utilisé dans : CPP3/ex03.
+
+
+--CPP4--
+
+Polymorphisme : est l'utilisation d'objets dérivés via pointeurs/références de base.
+Il permet d'appeler un comportement adapté au type réel.
+Il rend le code extensible et générique.
+Utilisé dans : CPP4/ex00, ex01, ex02.
+
+Fonction virtuelle : est une méthode qui active la liaison dynamique.
+L'appel résout la bonne implémentation à l'exécution.
+Sans virtual, la liaison reste statique sur le type de base.
+Utilisé dans : CPP4/ex00, ex01, ex02.
+
+Destructeur virtuel : est un destructeur déclaré virtual dans la classe de base.
+Il garantit la destruction complète d'un objet dérivé via Base*.
+Il évite les fuites mémoire et comportements indéfinis.
+Utilisé dans : CPP4/ex00, ex01, ex02.
+
+Deep copy : est une copie qui duplique les ressources dynamiques pointées.
+Chaque objet garde sa propre mémoire après copie.
+Elle évite les doubles delete liés à la shallow copy.
+Utilisé dans : CPP4/ex01, ex02.
+
+Règle des trois : est l'implémentation conjointe destructeur, copie et assignation.
+Elle s'applique aux classes qui gèrent des ressources dynamiques.
+Elle prévient les erreurs de cycle de vie des objets.
+Utilisé dans : CPP4/ex01, ex02.
+
+Classe abstraite : est une classe contenant au moins une fonction virtuelle pure.
+Elle ne peut pas être instanciée directement.
+Elle définit un contrat d'interface pour les classes dérivées.
+Utilisé dans : CPP4/ex02.
